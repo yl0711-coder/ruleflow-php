@@ -1,0 +1,24 @@
+[
+  {
+    "name": "high_risk_order",
+    "priority": 100,
+    "match": "all",
+    "conditions": [
+      {"field": "order.amount", "operator": ">", "value": 1000},
+      {"field": "user.risk_score", "operator": "<", "value": 60}
+    ],
+    "action": "reject",
+    "reason": "High-risk order requires manual review."
+  },
+  {
+    "name": "new_user_large_order",
+    "priority": 80,
+    "match": "all",
+    "conditions": [
+      {"field": "user.days_since_signup", "operator": "<=", "value": 7},
+      {"field": "order.amount", "operator": ">=", "value": 500}
+    ],
+    "action": "manual_review",
+    "reason": "New user placed a large order."
+  }
+]

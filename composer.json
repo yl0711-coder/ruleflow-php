@@ -1,0 +1,55 @@
+{
+    "name": "yanglei/ruleflow-php",
+    "description": "A lightweight, explainable rule engine for PHP and Laravel.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "rule-engine",
+        "laravel",
+        "risk-control",
+        "content-moderation",
+        "business-rules"
+    ],
+    "authors": [
+        {
+            "name": "Yang Lei",
+            "email": "252064657@qq.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "squizlabs/php_codesniffer": "^3.9"
+    },
+    "suggest": {
+        "laravel/framework": "Required when using RuleFlow as a Laravel package."
+    },
+    "autoload": {
+        "psr-4": {
+            "RuleFlow\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RuleFlow\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RuleFlow\\Laravel\\RuleFlowServiceProvider"
+            ],
+            "aliases": {
+                "RuleFlow": "RuleFlow\\Laravel\\Facades\\RuleFlow"
+            }
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "lint": "phpcs --standard=PSR12 src tests"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

@@ -1,0 +1,144 @@
+<?php
+
+declare(strict_types=1);
+
+namespace RuleFlow\Tests;
+
+use PHPUnit\Framework\TestCase;
+use RuleFlow\Engine;
+use RuleFlow\Operators\OperatorRegistry;
+use RuleFlow\RuleSet;
+use RuleFlow\Tests\Fixtures\RegexOperator;
+
+final class EngineTest extends TestCase
+{
+    public function testItMatchesTheFirstPassingRuleByPriority(): void
+    {
+        $rules = [
+            [
+                'name' => 'low_priority_rule',
+                'priority' => 10,
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 100],
+                ],
+                'action' => 'review',
+            ],
+            [
+                'name' => 'high_priority_rule',
+                'priority' => 100,
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'reject',
+                'reason' => 'High amount order.',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'order' => ['amount' => 1299],
+        ]);
+
+        self::assertTrue($result->matched());
+        self::assertSame('high_priority_rule', $result->rule()?->name());
+        self::assertSame('reject', $result->action());
+        self::assertSame('High amount order.', $result->reason());
+    }
+
+    public function testItReturnsTraceForPassedAndFailedConditions(): void
+    {
+        $rules = [
+            [
+                'name' => 'high_risk_order',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                    ['field' => 'user.risk_score', 'operator' => '<', 'value' => 60],
+                ],
+                'action' => 'reject',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'order' => ['amount' => 1299],
+            'user' => ['risk_score' => 45],
+        ]);
+
+        $trace = $result->trace()->toArray();
+
+        self::assertCount(1, $trace);
+        self::assertTrue($trace[0]['matched']);
+        self::assertTrue($trace[0]['checks'][0]['passed']);
+        self::assertSame(1299, $trace[0]['checks'][0]['actual']);
+        self::assertSame(1000, $trace[0]['checks'][0]['expected']);
+    }
+
+    public function testItReturnsNoMatchWhenConditionsFail(): void
+    {
+        $rules = [
+            [
+                'name' => 'high_risk_order',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'reject',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'order' => ['amount' => 99],
+        ]);
+
+        self::assertFalse($result->matched());
+        self::assertNull($result->action());
+        self::assertFalse($result->trace()->toArray()[0]['checks'][0]['passed']);
+    }
+
+    public function testItSupportsAnyMatchRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'suspicious_content',
+                'match' => 'any',
+                'conditions' => [
+                    ['field' => 'post.content', 'operator' => 'contains', 'value' => 'free money'],
+                    ['field' => 'post.report_count', 'operator' => '>=', 'value' => 3],
+                ],
+                'action' => 'manual_review',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'post' => [
+                'content' => 'normal content',
+                'report_count' => 5,
+            ],
+        ]);
+
+        self::assertTrue($result->matched());
+        self::assertSame('any', $result->trace()->toArray()[0]['match']);
+        self::assertFalse($result->trace()->toArray()[0]['checks'][0]['passed']);
+        self::assertTrue($result->trace()->toArray()[0]['checks'][1]['passed']);
+    }
+
+    public function testItSupportsCustomOperators(): void
+    {
+        $operators = OperatorRegistry::defaults();
+        $operators->register(new RegexOperator());
+
+        $rules = [
+            [
+                'name' => 'order_id_pattern',
+                'conditions' => [
+                    ['field' => 'order.id', 'operator' => 'regex', 'value' => '/^ORD-[0-9]+$/'],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $result = Engine::makeWithOperators(RuleSet::fromArray($rules), $operators)->evaluate([
+            'order' => ['id' => 'ORD-1001'],
+        ]);
+
+        self::assertTrue($result->matched());
+        self::assertSame('allow', $result->action());
+    }
+}
