@@ -30,8 +30,19 @@ RuleFlow provides a small and predictable way to:
 
 ## Installation
 
+### Via Packagist
+
 ```bash
 composer require yl0711-coder/ruleflow-php
+```
+
+> Packagist publishing is planned. If the package is not available on Packagist yet, install it from GitHub VCS.
+
+### From GitHub VCS
+
+```bash
+composer config repositories.ruleflow vcs https://github.com/yl0711-coder/ruleflow-php
+composer require yl0711-coder/ruleflow-php:^0.1
 ```
 
 The package requires PHP 8.1 or later.

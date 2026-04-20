@@ -37,3 +37,58 @@ jobs:
 
       - name: Run lint
         run: composer lint
+
+  install-test:
+    runs-on: ubuntu-latest
+    needs: phpunit
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - name: Create empty project
+        run: |
+          mkdir /tmp/ruleflow-install-test
+          cd /tmp/ruleflow-install-test
+          composer init --no-interaction --name=test/ruleflow-install-test
+          composer config repositories.ruleflow vcs https://github.com/yl0711-coder/ruleflow-php
+          composer require yl0711-coder/ruleflow-php:dev-main --no-interaction --no-progress
+
+      - name: Run installed package
+        run: |
+          cat > /tmp/ruleflow-install-test/test.php <<'PHP'
+          <?php
+
+          require __DIR__ . '/vendor/autoload.php';
+
+          use RuleFlow\Engine;
+          use RuleFlow\RuleSet;
+
+          $rules = [
+              [
+                  'name' => 'test_rule',
+                  'conditions' => [
+                      ['field' => 'order.amount', 'operator' => '>', 'value' => 100],
+                  ],
+                  'action' => 'review',
+              ],
+          ];
+
+          $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+              'order' => ['amount' => 200],
+          ]);
+
+          if (!$result->matched() || $result->action() !== 'review') {
+              fwrite(STDERR, 'RuleFlow install test failed.' . PHP_EOL);
+              var_export($result->toArray());
+              exit(1);
+          }
+
+          echo 'RuleFlow install test passed.' . PHP_EOL;
+          PHP
+
+          php /tmp/ruleflow-install-test/test.php
