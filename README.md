@@ -31,7 +31,7 @@ RuleFlow provides a small and predictable way to:
 ## Installation
 
 ```bash
-composer require yanglei/ruleflow-php
+composer require yl0711-coder/ruleflow-php
 ```
 
 The package requires PHP 8.1 or later.
