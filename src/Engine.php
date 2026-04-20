@@ -74,7 +74,7 @@ final class Engine
             ];
 
             if ($matched) {
-                return EvaluationResult::matched($rule, new Trace($trace));
+                return EvaluationResult::match($rule, new Trace($trace));
             }
         }
 

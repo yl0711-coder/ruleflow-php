@@ -18,7 +18,7 @@ final class EvaluationResult
         return new self(false, null, $trace);
     }
 
-    public static function matched(Rule $rule, Trace $trace): self
+    public static function match(Rule $rule, Trace $trace): self
     {
         return new self(true, $rule, $trace);
     }
