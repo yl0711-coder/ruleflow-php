@@ -14,7 +14,7 @@ final class RuleFlowServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../../config/ruleflow.php', 'ruleflow');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/ruleflow.php', 'ruleflow');
 
         $this->app->singleton(RuleFlow::class, function (): RuleFlow {
             $loader = new ArrayRuleLoader((array) config('ruleflow.rules', []));
@@ -35,7 +35,7 @@ final class RuleFlowServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->publishes([
-            __DIR__ . '/../../../config/ruleflow.php' => config_path('ruleflow.php'),
+            __DIR__ . '/../../config/ruleflow.php' => config_path('ruleflow.php'),
         ], 'ruleflow-config');
     }
 }
