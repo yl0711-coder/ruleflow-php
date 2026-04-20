@@ -49,7 +49,12 @@
     },
     "scripts": {
         "test": "phpunit",
-        "lint": "phpcs --standard=PSR12 src tests"
+        "lint": "phpcs --standard=PSR12 src tests",
+        "examples": [
+            "php examples/order-risk.php",
+            "php examples/content-moderation.php",
+            "php examples/json-loader.php"
+        ]
     },
     "minimum-stability": "stable",
     "prefer-stable": true
