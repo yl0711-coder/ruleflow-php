@@ -1,5 +1,8 @@
 /vendor/
 /composer.lock
+/composer
+/composer.phar
+/composer-setup.php
 /.phpunit.cache/
 /coverage/
 /.idea/
