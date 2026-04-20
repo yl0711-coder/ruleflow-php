@@ -63,12 +63,42 @@ final class Rule
             throw new InvalidRuleException('Rule conditions must be an array.');
         }
 
+        if (!is_string($definition['name'])) {
+            throw new InvalidRuleException('Rule name must be a string.');
+        }
+
+        if (!is_string($definition['action'])) {
+            throw new InvalidRuleException("Rule [{$definition['name']}] action must be a string.");
+        }
+
+        if (
+            array_key_exists('reason', $definition)
+            && $definition['reason'] !== null
+            && !is_scalar($definition['reason'])
+        ) {
+            throw new InvalidRuleException("Rule [{$definition['name']}] reason must be a string or null.");
+        }
+
+        if (
+            array_key_exists('match', $definition)
+            && !is_string($definition['match'])
+        ) {
+            throw new InvalidRuleException("Rule [{$definition['name']}] match must be a string.");
+        }
+
+        $conditions = [];
+
+        foreach ($definition['conditions'] as $index => $condition) {
+            if (!is_array($condition)) {
+                throw new InvalidRuleException("Rule [{$definition['name']}] condition [{$index}] must be an array.");
+            }
+
+            $conditions[] = Condition::fromArray($condition);
+        }
+
         return new self(
             (string) $definition['name'],
-            array_map(
-                static fn (array $condition): Condition => Condition::fromArray($condition),
-                $definition['conditions']
-            ),
+            $conditions,
             (string) $definition['action'],
             isset($definition['reason']) ? (string) $definition['reason'] : null,
             isset($definition['priority']) ? (int) $definition['priority'] : 0,

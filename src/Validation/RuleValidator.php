@@ -37,6 +37,7 @@ final class RuleValidator
 
             $this->validateRequiredKeys($definition, $path, $errors);
             $this->validateRuleName($definition, $path, $names, $errors);
+            $this->validateAction($definition, $path, $errors);
             $this->validateMatchMode($definition, $path, $errors);
             $this->validateConditions($definition, $path, $errors);
         }
@@ -105,6 +106,21 @@ final class RuleValidator
 
         if (!in_array($definition['match'], [Rule::MATCH_ALL, Rule::MATCH_ANY], true)) {
             $errors[] = "{$path}.match must be either [all] or [any].";
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $definition
+     * @param list<string> $errors
+     */
+    private function validateAction(array $definition, string $path, array &$errors): void
+    {
+        if (!array_key_exists('action', $definition)) {
+            return;
+        }
+
+        if (!is_string($definition['action']) || trim($definition['action']) === '') {
+            $errors[] = "{$path}.action must be a non-empty string.";
         }
     }
 

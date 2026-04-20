@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RuleFlow;
 
+use RuleFlow\Exceptions\InvalidRuleException;
+
 final class RuleSet
 {
     /**
@@ -18,10 +20,15 @@ final class RuleSet
      */
     public static function fromArray(array $definitions): self
     {
-        $rules = array_map(
-            static fn (array $definition): Rule => Rule::fromArray($definition),
-            $definitions
-        );
+        $rules = [];
+
+        foreach ($definitions as $index => $definition) {
+            if (!is_array($definition)) {
+                throw new InvalidRuleException("Rule definitions[{$index}] must be an array.");
+            }
+
+            $rules[] = Rule::fromArray($definition);
+        }
 
         usort(
             $rules,

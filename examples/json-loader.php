@@ -9,7 +9,7 @@ use RuleFlow\Validation\RuleValidator;
 require __DIR__ . '/../vendor/autoload.php';
 
 $rulesPath = __DIR__ . '/rules/order-risk.json';
-$rules = json_decode((string) file_get_contents($rulesPath), true);
+$rules = json_decode((string) file_get_contents($rulesPath), true, 512, JSON_THROW_ON_ERROR);
 
 $validation = RuleValidator::defaults()->validate($rules);
 

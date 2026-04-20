@@ -37,15 +37,39 @@ final class RuleValidatorTest extends TestCase
                 'conditions' => [
                     ['field' => '', 'operator' => 'unknown', 'value' => true],
                 ],
-                'action' => 'reject',
+                'action' => '',
             ],
         ]);
 
         self::assertFalse($result->valid());
         self::assertContains('rules[0].name must be a non-empty string.', $result->errors());
         self::assertContains('rules[0].match must be either [all] or [any].', $result->errors());
+        self::assertContains('rules[0].action must be a non-empty string.', $result->errors());
         self::assertContains('rules[0].conditions[0].field must be a non-empty string.', $result->errors());
         self::assertContains('rules[0].conditions[0].operator [unknown] is not registered.', $result->errors());
+    }
+
+    public function testItReportsDuplicatedRuleNames(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'duplicated',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'duplicated',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains('rules[1].name [duplicated] is duplicated.', $result->errors());
     }
 
     public function testItRespectsCustomOperators(): void

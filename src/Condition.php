@@ -33,6 +33,14 @@ final class Condition
             }
         }
 
+        if (!is_string($definition['field'])) {
+            throw new InvalidRuleException('Condition field must be a string.');
+        }
+
+        if (!is_string($definition['operator'])) {
+            throw new InvalidRuleException('Condition operator must be a string.');
+        }
+
         return new self(
             (string) $definition['field'],
             (string) $definition['operator'],
