@@ -1,5 +1,7 @@
 # RuleFlow PHP
 
+[![Tests](https://github.com/yl0711-coder/ruleflow-php/actions/workflows/tests.yml/badge.svg)](https://github.com/yl0711-coder/ruleflow-php/actions/workflows/tests.yml)
+
 A lightweight, explainable rule engine for PHP and Laravel.
 
 RuleFlow helps backend teams move complex business rules out of hard-coded `if/else` logic and into testable, configurable, and traceable rule definitions.
