@@ -89,4 +89,48 @@ final class RuleValidatorTest extends TestCase
 
         self::assertTrue($result->valid());
     }
+
+    public function testItValidatesNestedConditionGroups(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'nested_rule',
+                'conditions' => [
+                    [
+                        'match' => 'any',
+                        'conditions' => [
+                            ['field' => 'user.score', 'operator' => '>=', 'value' => 80],
+                            ['field' => 'user.country', 'operator' => 'in', 'value' => ['CN', 'SG']],
+                        ],
+                    ],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        self::assertTrue($result->valid());
+    }
+
+    public function testItReportsInvalidNestedConditionGroups(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'nested_rule',
+                'conditions' => [
+                    [
+                        'match' => 'sometimes',
+                        'conditions' => [
+                            ['field' => '', 'operator' => 'unknown', 'value' => true],
+                        ],
+                    ],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains('rules[0].conditions[0].match must be either [all] or [any].', $result->errors());
+        self::assertContains('rules[0].conditions[0].conditions[0].field must be a non-empty string.', $result->errors());
+        self::assertContains('rules[0].conditions[0].conditions[0].operator [unknown] is not registered.', $result->errors());
+    }
 }

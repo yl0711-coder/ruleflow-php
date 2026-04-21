@@ -147,7 +147,51 @@ final class RuleValidator
                 continue;
             }
 
-            $this->validateCondition($condition, $conditionPath, $errors);
+            $this->validateConditionNode($condition, $conditionPath, $errors);
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $condition
+     * @param list<string> $errors
+     */
+    private function validateConditionNode(array $condition, string $path, array &$errors): void
+    {
+        if (array_key_exists('conditions', $condition)) {
+            $this->validateConditionGroup($condition, $path, $errors);
+            return;
+        }
+
+        $this->validateCondition($condition, $path, $errors);
+    }
+
+    /**
+     * @param array<string,mixed> $group
+     * @param list<string> $errors
+     */
+    private function validateConditionGroup(array $group, string $path, array &$errors): void
+    {
+        if (
+            array_key_exists('match', $group)
+            && !in_array($group['match'], [Rule::MATCH_ALL, Rule::MATCH_ANY], true)
+        ) {
+            $errors[] = "{$path}.match must be either [all] or [any].";
+        }
+
+        if (!is_array($group['conditions']) || $group['conditions'] === []) {
+            $errors[] = "{$path}.conditions must be a non-empty array.";
+            return;
+        }
+
+        foreach ($group['conditions'] as $index => $condition) {
+            $conditionPath = "{$path}.conditions[{$index}]";
+
+            if (!is_array($condition)) {
+                $errors[] = "{$conditionPath} must be an object.";
+                continue;
+            }
+
+            $this->validateConditionNode($condition, $conditionPath, $errors);
         }
     }
 

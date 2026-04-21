@@ -141,4 +141,41 @@ final class EngineTest extends TestCase
         self::assertTrue($result->matched());
         self::assertSame('allow', $result->action());
     }
+
+    public function testItSupportsNestedConditionGroups(): void
+    {
+        $rules = [
+            [
+                'name' => 'nested_review_rule',
+                'match' => 'all',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                    [
+                        'match' => 'any',
+                        'conditions' => [
+                            ['field' => 'user.risk_score', 'operator' => '<', 'value' => 60],
+                            ['field' => 'user.country', 'operator' => 'in', 'value' => ['NG', 'RU']],
+                        ],
+                    ],
+                ],
+                'action' => 'manual_review',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'order' => ['amount' => 1299],
+            'user' => ['risk_score' => 72, 'country' => 'NG'],
+        ]);
+
+        $trace = $result->trace()->toArray();
+
+        self::assertTrue($result->matched());
+        self::assertSame('manual_review', $result->action());
+        self::assertTrue($trace[0]['matched']);
+        self::assertSame('group', $trace[0]['checks'][1]['type']);
+        self::assertSame('any', $trace[0]['checks'][1]['match']);
+        self::assertTrue($trace[0]['checks'][1]['passed']);
+        self::assertFalse($trace[0]['checks'][1]['checks'][0]['passed']);
+        self::assertTrue($trace[0]['checks'][1]['checks'][1]['passed']);
+    }
 }

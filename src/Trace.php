@@ -12,13 +12,7 @@ final class Trace
      *     matched:bool,
      *     match?:string,
      *     skipped?:bool,
-     *     checks:list<array{
-     *         field:string,
-     *         actual:mixed,
-     *         operator:string,
-     *         expected:mixed,
-     *         passed:bool
-     *     }>
+     *     checks:list<array<string,mixed>>
      * }> $entries
      */
     public function __construct(private readonly array $entries = [])

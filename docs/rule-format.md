@@ -35,6 +35,36 @@ Each condition contains:
 - `operator`: comparison operator, for example `>` or `contains`
 - `value`: expected value
 
+## Nested Condition Groups
+
+Conditions can also contain nested groups. This is useful for expressions such as
+`order.amount > 1000 AND (user.risk_score < 60 OR user.country in ["NG", "RU"])`.
+
+Each group contains:
+
+- `match`: optional string, either `all` or `any`
+- `conditions`: one or more conditions or nested groups
+
+Example:
+
+```json
+{
+  "name": "high_risk_order",
+  "match": "all",
+  "conditions": [
+    {"field": "order.amount", "operator": ">", "value": 1000},
+    {
+      "match": "any",
+      "conditions": [
+        {"field": "user.risk_score", "operator": "<", "value": 60},
+        {"field": "user.country", "operator": "in", "value": ["NG", "RU"]}
+      ]
+    }
+  ],
+  "action": "manual_review"
+}
+```
+
 ## Match Modes
 
 RuleFlow supports two match modes:

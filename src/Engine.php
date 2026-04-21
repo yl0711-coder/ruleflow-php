@@ -43,28 +43,11 @@ final class Engine
                 continue;
             }
 
-            $checks = [];
-            $matched = $rule->matchesAllConditions();
-
-            foreach ($rule->conditions() as $condition) {
-                $actual = $this->fields->get($context, $condition->field());
-                $operator = $this->operators->get($condition->operator());
-                $passed = $operator->evaluate($actual, $condition->value());
-
-                $checks[] = [
-                    'field' => $condition->field(),
-                    'actual' => $actual,
-                    'operator' => $condition->operator(),
-                    'expected' => $condition->value(),
-                    'passed' => $passed,
-                ];
-
-                if ($rule->matchesAllConditions() && !$passed) {
-                    $matched = false;
-                } elseif (!$rule->matchesAllConditions() && $passed) {
-                    $matched = true;
-                }
-            }
+            ['matched' => $matched, 'checks' => $checks] = $this->evaluateNodes(
+                $rule->conditions(),
+                $rule->match(),
+                $context
+            );
 
             $trace[] = [
                 'rule' => $rule->name(),
@@ -79,5 +62,61 @@ final class Engine
         }
 
         return EvaluationResult::noMatch(new Trace($trace));
+    }
+
+    /**
+     * @param list<Condition|ConditionGroup> $nodes
+     * @param array<string,mixed> $context
+     * @return array{
+     *     matched:bool,
+     *     checks:list<array<string,mixed>>
+     * }
+     */
+    private function evaluateNodes(array $nodes, string $match, array $context): array
+    {
+        $checks = [];
+        $matched = $match === Rule::MATCH_ALL;
+
+        foreach ($nodes as $node) {
+            if ($node instanceof ConditionGroup) {
+                ['matched' => $groupMatched, 'checks' => $groupChecks] = $this->evaluateNodes(
+                    $node->conditions(),
+                    $node->match(),
+                    $context
+                );
+
+                $checks[] = [
+                    'type' => 'group',
+                    'match' => $node->match(),
+                    'passed' => $groupMatched,
+                    'checks' => $groupChecks,
+                ];
+
+                $passed = $groupMatched;
+            } else {
+                $actual = $this->fields->get($context, $node->field());
+                $operator = $this->operators->get($node->operator());
+                $passed = $operator->evaluate($actual, $node->value());
+
+                $checks[] = [
+                    'field' => $node->field(),
+                    'actual' => $actual,
+                    'operator' => $node->operator(),
+                    'expected' => $node->value(),
+                    'passed' => $passed,
+                ];
+            }
+
+            if ($match === Rule::MATCH_ALL && !$passed) {
+                $matched = false;
+            } elseif ($match === Rule::MATCH_ANY && $passed) {
+                $matched = true;
+            }
+        }
+
+        return [
+            'matched' => $matched,
+            'checks' => $checks,
+        ];
     }
 }

@@ -186,6 +186,30 @@ Example:
 ]
 ```
 
+## Nested Condition Groups
+
+RuleFlow also supports nested condition groups for cases like `A AND (B OR C)`:
+
+```php
+[
+    'name' => 'high_risk_order',
+    'match' => 'all',
+    'conditions' => [
+        ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+        [
+            'match' => 'any',
+            'conditions' => [
+                ['field' => 'user.risk_score', 'operator' => '<', 'value' => 60],
+                ['field' => 'user.country', 'operator' => 'in', 'value' => ['NG', 'RU']],
+            ],
+        ],
+    ],
+    'action' => 'manual_review',
+]
+```
+
+Nested groups are evaluated recursively and included in the execution trace.
+
 ## Custom Operators
 
 Register a custom operator when built-in operators are not enough:

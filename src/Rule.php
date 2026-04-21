@@ -12,7 +12,7 @@ final class Rule
     public const MATCH_ANY = 'any';
 
     /**
-     * @param list<Condition> $conditions
+     * @param list<Condition|ConditionGroup> $conditions
      */
     public function __construct(
         private readonly string $name,
@@ -43,7 +43,7 @@ final class Rule
     /**
      * @param array{
      *     name:string,
-     *     conditions:list<array{field:string,operator:string,value:mixed}>,
+     *     conditions:list<array<string,mixed>>,
      *     action:string,
      *     reason?:string,
      *     priority?:int,
@@ -93,7 +93,7 @@ final class Rule
                 throw new InvalidRuleException("Rule [{$definition['name']}] condition [{$index}] must be an array.");
             }
 
-            $conditions[] = Condition::fromArray($condition);
+            $conditions[] = ConditionGroup::parseConditionNode($condition);
         }
 
         return new self(
@@ -113,7 +113,7 @@ final class Rule
     }
 
     /**
-     * @return list<Condition>
+     * @return list<Condition|ConditionGroup>
      */
     public function conditions(): array
     {
