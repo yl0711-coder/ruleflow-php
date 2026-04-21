@@ -166,4 +166,12 @@ final class LaravelIntegrationTest extends TestCase
             ->expectsOutput('- rules[0].conditions[0].operator [unknown] is not registered.')
             ->assertFailed();
     }
+
+    public function testItResolvesFreshRuleFlowInstancesFromContainer(): void
+    {
+        $first = $this->app->make(RuleFlow::class);
+        $second = $this->app->make(RuleFlow::class);
+
+        self::assertNotSame($first, $second);
+    }
 }

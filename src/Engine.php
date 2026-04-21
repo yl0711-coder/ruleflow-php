@@ -32,30 +32,10 @@ final class Engine
      */
     public function evaluate(array $context): EvaluationResult
     {
-        $trace = [];
+        ['trace' => $trace, 'matchedRules' => $matchedRules] = $this->run($context, false);
 
-        foreach ($this->ruleSet->rules() as $rule) {
-            if (!$rule->enabled()) {
-                $trace[] = $this->skippedTraceEntry($rule);
-                continue;
-            }
-
-            ['matched' => $matched, 'checks' => $checks] = $this->evaluateNodes(
-                $rule->conditions(),
-                $rule->match(),
-                $context
-            );
-
-            $trace[] = [
-                'rule' => $rule->name(),
-                'matched' => $matched,
-                'match' => $rule->match(),
-                'checks' => $checks,
-            ];
-
-            if ($matched) {
-                return EvaluationResult::match($rule, new Trace($trace));
-            }
+        if ($matchedRules !== []) {
+            return EvaluationResult::match($matchedRules[0], new Trace($trace));
         }
 
         return EvaluationResult::noMatch(new Trace($trace));
@@ -65,6 +45,20 @@ final class Engine
      * @param array<string,mixed> $context
      */
     public function evaluateAll(array $context): MultiEvaluationResult
+    {
+        ['trace' => $trace, 'matchedRules' => $matchedRules] = $this->run($context, true);
+
+        return new MultiEvaluationResult($matchedRules, new Trace($trace));
+    }
+
+    /**
+     * @param array<string,mixed> $context
+     * @return array{
+     *     trace:list<array<string,mixed>>,
+     *     matchedRules:list<Rule>
+     * }
+     */
+    private function run(array $context, bool $collectAll): array
     {
         $trace = [];
         $matchedRules = [];
@@ -88,12 +82,21 @@ final class Engine
                 'checks' => $checks,
             ];
 
-            if ($matched) {
-                $matchedRules[] = $rule;
+            if (!$matched) {
+                continue;
+            }
+
+            $matchedRules[] = $rule;
+
+            if (!$collectAll) {
+                break;
             }
         }
 
-        return new MultiEvaluationResult($matchedRules, new Trace($trace));
+        return [
+            'trace' => $trace,
+            'matchedRules' => $matchedRules,
+        ];
     }
 
     /**

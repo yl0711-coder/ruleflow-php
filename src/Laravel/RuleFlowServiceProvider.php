@@ -19,11 +19,11 @@ final class RuleFlowServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/ruleflow.php', 'ruleflow');
 
-        $this->app->singleton(RuleLoaderInterface::class, function (): RuleLoaderInterface {
+        $this->app->bind(RuleLoaderInterface::class, function (): RuleLoaderInterface {
             return new ArrayRuleLoader((array) config('ruleflow.rules', []));
         });
 
-        $this->app->singleton(RuleSetCacheInterface::class, function (): RuleSetCacheInterface {
+        $this->app->bind(RuleSetCacheInterface::class, function (): RuleSetCacheInterface {
             $driver = (string) config('ruleflow.cache.driver', 'in_memory');
 
             if ($driver === 'laravel') {
@@ -38,7 +38,7 @@ final class RuleFlowServiceProvider extends ServiceProvider
             return new InMemoryRuleSetCache();
         });
 
-        $this->app->singleton(RuleFlow::class, function (): RuleFlow {
+        $this->app->bind(RuleFlow::class, function (): RuleFlow {
             $loader = $this->app->make(RuleLoaderInterface::class);
 
             if ((bool) config('ruleflow.cache.enabled', false)) {

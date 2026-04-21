@@ -9,9 +9,9 @@ final class FieldAccessor
     /**
      * Reads nested values with dot notation, for example user.risk_score.
      *
-     * @param array<string,mixed> $context
+     * @param array<string,mixed>|object $context
      */
-    public function get(array $context, string $path, mixed $default = null): mixed
+    public function get(array|object $context, string $path, mixed $default = null): mixed
     {
         $result = $this->resolve($context, $path);
 
@@ -19,18 +19,18 @@ final class FieldAccessor
     }
 
     /**
-     * @param array<string,mixed> $context
+     * @param array<string,mixed>|object $context
      */
-    public function exists(array $context, string $path): bool
+    public function exists(array|object $context, string $path): bool
     {
         return $this->resolve($context, $path)['exists'];
     }
 
     /**
-     * @param array<string,mixed> $context
+     * @param array<string,mixed>|object $context
      * @return array{exists:bool,value:mixed}
      */
-    private function resolve(array $context, string $path): array
+    private function resolve(array|object $context, string $path): array
     {
         $current = $context;
 

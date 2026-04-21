@@ -35,4 +35,17 @@ final class FieldAccessorTest extends TestCase
 
         self::assertFalse($accessor->exists([], 'user.risk_score'));
     }
+
+    public function testItReadsTopLevelObjects(): void
+    {
+        $accessor = new FieldAccessor();
+        $context = (object) [
+            'user' => (object) [
+                'risk_score' => 45,
+            ],
+        ];
+
+        self::assertSame(45, $accessor->get($context, 'user.risk_score'));
+        self::assertTrue($accessor->exists($context, 'user.risk_score'));
+    }
 }
