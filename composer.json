@@ -48,8 +48,8 @@
         }
     },
     "scripts": {
-        "test": "phpunit",
-        "lint": "phpcs --standard=PSR12 src tests",
+        "test": "vendor/bin/phpunit",
+        "lint": "vendor/bin/phpcs --standard=PSR12 src tests",
         "examples": [
             "php examples/order-risk.php",
             "php examples/content-moderation.php",
