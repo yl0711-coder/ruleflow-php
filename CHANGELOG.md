@@ -6,6 +6,20 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 - No unreleased changes yet.
 
+## v0.2.2 - 2026-04-21
+
+- Added Packagist and license badges to the README.
+- Added Packagist installation documentation.
+- Added a benchmark script for rule evaluation performance.
+- Added benchmark documentation with local measurement results.
+
+## v0.2.1 - 2026-04-21
+
+- Documented rule semantics and evaluation behavior.
+- Documented public loader, cache, and operator interface contracts.
+- Refined engine lifecycle and internal rule handling.
+- Switched equality comparisons to strict operators.
+
 ## v0.2.0 - 2026-04-21
 
 - Added nested condition groups for expressions such as `A AND (B OR C)`.
