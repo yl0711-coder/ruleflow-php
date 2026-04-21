@@ -386,4 +386,74 @@ final class EngineTest extends TestCase
         self::assertSame('matched_rule', $trace[0]['rule']);
         self::assertSame('first_match', $trace[0]['stop_reason']);
     }
+
+    public function testTraceIncludesFailureReasonsForFailedConditions(): void
+    {
+        $rules = [
+            [
+                'name' => 'failed_conditions',
+                'conditions' => [
+                    ['field' => 'user.phone', 'operator' => 'exists'],
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 100],
+                    ['field' => 'user.country', 'operator' => 'in', 'value' => ['US', 'CA']],
+                    ['field' => 'order.score', 'operator' => 'between', 'value' => [50, 80]],
+                    ['field' => 'order.id', 'operator' => 'regex', 'value' => '/^ORD-/'],
+                ],
+                'action' => 'manual_review',
+            ],
+        ];
+
+        $trace = Engine::make(RuleSet::fromArray($rules))
+            ->evaluate([
+                'user' => ['country' => 'CN'],
+                'order' => [
+                    'amount' => 'not-a-number',
+                    'score' => 90,
+                    'id' => 'PAY-1001',
+                ],
+            ])
+            ->trace()
+            ->toArray();
+
+        self::assertSame('field_missing', $trace[0]['failure_reason']);
+        self::assertSame('field_missing', $trace[0]['checks'][0]['failure_reason']);
+        self::assertSame('type_mismatch', $trace[0]['checks'][1]['failure_reason']);
+        self::assertSame('value_not_allowed', $trace[0]['checks'][2]['failure_reason']);
+        self::assertSame('value_out_of_range', $trace[0]['checks'][3]['failure_reason']);
+        self::assertSame('pattern_mismatch', $trace[0]['checks'][4]['failure_reason']);
+    }
+
+    public function testTraceIncludesFailureReasonForFailedGroups(): void
+    {
+        $rules = [
+            [
+                'name' => 'failed_group',
+                'conditions' => [
+                    [
+                        'match' => 'any',
+                        'conditions' => [
+                            ['field' => 'user.country', 'operator' => '=', 'value' => 'US'],
+                            ['field' => 'user.segment', 'operator' => 'contains', 'value' => 'vip'],
+                        ],
+                    ],
+                ],
+                'action' => 'manual_review',
+            ],
+        ];
+
+        $trace = Engine::make(RuleSet::fromArray($rules))
+            ->evaluate([
+                'user' => [
+                    'country' => 'CN',
+                    'segment' => ['basic'],
+                ],
+            ])
+            ->trace()
+            ->toArray();
+
+        self::assertSame('value_mismatch', $trace[0]['failure_reason']);
+        self::assertSame('value_mismatch', $trace[0]['checks'][0]['failure_reason']);
+        self::assertSame('value_mismatch', $trace[0]['checks'][0]['checks'][0]['failure_reason']);
+        self::assertSame('value_not_contained', $trace[0]['checks'][0]['checks'][1]['failure_reason']);
+    }
 }

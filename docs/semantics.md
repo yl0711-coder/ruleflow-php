@@ -62,6 +62,40 @@ Each condition and nested group also includes `duration_ms`.
 Use `Trace::summary()` for a compact debugging view with matched, failed,
 skipped, and total duration data.
 
+Failed rule and condition entries include `failure_reason` when RuleFlow can
+infer a useful reason:
+
+```php
+[
+    'rule' => 'high_risk_order',
+    'matched' => false,
+    'failure_reason' => 'field_missing',
+    'checks' => [
+        [
+            'field' => 'user.phone',
+            'operator' => 'exists',
+            'passed' => false,
+            'failure_reason' => 'field_missing',
+        ],
+    ],
+]
+```
+
+Built-in failure reason codes include:
+
+- `field_missing`: the input context does not contain the required field.
+- `field_present`: `not_exists` failed because the field exists.
+- `type_mismatch`: the actual or expected value type is unsupported by the operator.
+- `invalid_expected`: the rule's expected value has an invalid shape for the operator.
+- `value_mismatch`: a strict equality or numeric comparison did not pass.
+- `value_not_allowed`: an `in` condition failed.
+- `value_disallowed`: a `not_in` condition failed.
+- `value_not_contained`: a `contains` condition failed.
+- `prefix_mismatch`: a `starts_with` condition failed.
+- `suffix_mismatch`: an `ends_with` condition failed.
+- `value_out_of_range`: a `between` condition failed.
+- `pattern_mismatch`: a `regex` condition failed.
+
 ## Field Resolution
 
 Fields are resolved from the input context using dot notation, for example

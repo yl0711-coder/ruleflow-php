@@ -163,6 +163,11 @@ When a field does not exist, the trace explicitly marks it with `exists: false` 
 `missing: true`. Disabled rules are marked with `skipped: true` and
 `skipped_reason: "disabled"`.
 
+When a rule or condition fails, RuleFlow includes `failure_reason` when it can
+infer one. Examples include `field_missing`, `type_mismatch`,
+`invalid_expected`, `value_mismatch`, `value_not_allowed`,
+`value_not_contained`, and `pattern_mismatch`.
+
 You can also use trace helpers for operational debugging:
 
 ```php

@@ -13,6 +13,7 @@ final class Trace
      *     match?:string,
      *     skipped?:bool,
      *     skipped_reason?:string,
+     *     failure_reason?:string,
      *     duration_ms?:float,
      *     stop_reason?:string,
      *     checks:list<array<string,mixed>>
