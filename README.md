@@ -354,6 +354,7 @@ RuleFlow is intentionally small. The first versions do not aim to provide:
 composer install
 composer test
 composer lint
+composer analyse
 ```
 
 Run examples:
@@ -364,11 +365,17 @@ php examples/content-moderation.php
 php examples/json-loader.php
 ```
 
+Generate coverage locally when Xdebug or PCOV is available:
+
+```bash
+composer test-coverage
+```
+
 ## Roadmap
 
 - v0.1: core engine, built-in operators, trace output, array/JSON loaders, custom operators, rule validation
-- v0.2: nested rule groups, richer condition composition, Laravel cache driver integration
-- v0.3: artisan rule validation command, benchmark suite, production tuning guide
+- v0.2: nested rule groups, evaluateAll, existence operators, built-in regex, trace improvements, Laravel cache driver, artisan validation command, PHPStan, coverage CI
+- v0.3: benchmark suite, Packagist publishing, production tuning guide
 - v1.0: stable rule format and semantic versioning guarantee
 
 ## License

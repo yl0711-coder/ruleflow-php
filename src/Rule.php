@@ -41,15 +41,7 @@ final class Rule
     }
 
     /**
-     * @param array{
-     *     name:string,
-     *     conditions:list<array<string,mixed>>,
-     *     action:string,
-     *     reason?:string,
-     *     priority?:int,
-     *     enabled?:bool,
-     *     match?:string
-     * } $definition
+     * @param array<string,mixed> $definition
      */
     public static function fromArray(array $definition): self
     {

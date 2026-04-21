@@ -133,8 +133,10 @@ final class LaravelIntegrationTest extends TestCase
 
         $cache->put('ruleflow.test', $ruleSet, 60);
 
-        self::assertInstanceOf(RuleSet::class, $cache->get('ruleflow.test'));
-        self::assertSame('cached_rule', $cache->get('ruleflow.test')?->rules()[0]->name());
+        $cachedRuleSet = $cache->get('ruleflow.test');
+
+        self::assertInstanceOf(RuleSet::class, $cachedRuleSet);
+        self::assertSame('cached_rule', $cachedRuleSet->rules()[0]->name());
     }
 
     public function testItProvidesAnArtisanValidationCommand(): void

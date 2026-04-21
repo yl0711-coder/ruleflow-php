@@ -68,7 +68,10 @@ final class LoaderTest extends TestCase
         $this->expectException(InvalidRuleException::class);
         $this->expectExceptionMessage('Rule definitions[0] must be an array.');
 
-        (new ArrayRuleLoader(['not-a-rule']))->load();
+        /** @var array<int,mixed> $definitions */
+        $definitions = ['not-a-rule'];
+
+        (new ArrayRuleLoader($definitions))->load();
     }
 
     public function testArrayLoaderRejectsMalformedConditions(): void

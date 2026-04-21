@@ -25,10 +25,7 @@ final class ConditionGroup
     }
 
     /**
-     * @param array{
-     *     conditions:list<array<string,mixed>>,
-     *     match?:string
-     * } $definition
+     * @param array<string,mixed> $definition
      */
     public static function fromArray(array $definition): self
     {

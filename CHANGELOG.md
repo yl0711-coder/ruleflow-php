@@ -4,14 +4,15 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
-- Initial rule engine core.
-- Added built-in operators.
-- Added explainable trace output.
-- Added array and JSON rule loaders.
-- Added Laravel service provider and facade.
-- Added examples and PHPUnit test skeleton.
-- Added `all` and `any` match modes.
-- Added custom operator registration example and tests.
-- Fixed Laravel package config path.
-- Added rule validator and validation documentation.
-- Added JSON rule file example and JSON loader example.
+- No unreleased changes yet.
+
+## v0.2.0 - 2026-04-21
+
+- Added nested condition groups for expressions such as `A AND (B OR C)`.
+- Added `evaluateAll()` and `MultiEvaluationResult` for collecting all matched rules.
+- Added built-in `exists`, `not_exists`, and `regex` operators.
+- Improved trace readability with `exists`, `missing`, `matched_rules`, and `skipped_reason`.
+- Added Laravel cache driver support with configurable cache store selection.
+- Added `php artisan ruleflow:validate` command for Laravel projects.
+- Added PHPStan static analysis and coverage generation scripts.
+- Added CI quality job for PHPStan and Clover coverage output.
