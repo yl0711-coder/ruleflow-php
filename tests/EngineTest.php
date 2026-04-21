@@ -178,4 +178,50 @@ final class EngineTest extends TestCase
         self::assertFalse($trace[0]['checks'][1]['checks'][0]['passed']);
         self::assertTrue($trace[0]['checks'][1]['checks'][1]['passed']);
     }
+
+    public function testItCanCollectAllMatchedRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'amount_review',
+                'priority' => 100,
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'manual_review',
+                'reason' => 'Amount threshold reached.',
+            ],
+            [
+                'name' => 'risk_hold',
+                'priority' => 90,
+                'conditions' => [
+                    ['field' => 'user.risk_score', 'operator' => '<', 'value' => 60],
+                ],
+                'action' => 'hold',
+                'reason' => 'Risk score threshold reached.',
+            ],
+            [
+                'name' => 'non_match_rule',
+                'conditions' => [
+                    ['field' => 'user.country', 'operator' => '=', 'value' => 'US'],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluateAll([
+            'order' => ['amount' => 1299],
+            'user' => ['risk_score' => 45, 'country' => 'CN'],
+        ]);
+
+        self::assertTrue($result->matched());
+        self::assertSame(['amount_review', 'risk_hold'], $result->ruleNames());
+        self::assertSame(['manual_review', 'hold'], $result->actions());
+        self::assertSame(
+            ['Amount threshold reached.', 'Risk score threshold reached.'],
+            $result->reasons()
+        );
+        self::assertSame('amount_review', $result->firstRule()?->name());
+        self::assertCount(3, $result->trace()->toArray());
+    }
 }

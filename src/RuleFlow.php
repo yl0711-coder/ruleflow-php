@@ -19,4 +19,12 @@ final class RuleFlow
     {
         return Engine::make($this->loader->load())->evaluate($context);
     }
+
+    /**
+     * @param array<string,mixed> $context
+     */
+    public function evaluateAll(array $context): MultiEvaluationResult
+    {
+        return Engine::make($this->loader->load())->evaluateAll($context);
+    }
 }

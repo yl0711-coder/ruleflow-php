@@ -65,6 +65,46 @@ final class Engine
     }
 
     /**
+     * @param array<string,mixed> $context
+     */
+    public function evaluateAll(array $context): MultiEvaluationResult
+    {
+        $trace = [];
+        $matchedRules = [];
+
+        foreach ($this->ruleSet->rules() as $rule) {
+            if (!$rule->enabled()) {
+                $trace[] = [
+                    'rule' => $rule->name(),
+                    'matched' => false,
+                    'skipped' => true,
+                    'checks' => [],
+                ];
+                continue;
+            }
+
+            ['matched' => $matched, 'checks' => $checks] = $this->evaluateNodes(
+                $rule->conditions(),
+                $rule->match(),
+                $context
+            );
+
+            $trace[] = [
+                'rule' => $rule->name(),
+                'matched' => $matched,
+                'match' => $rule->match(),
+                'checks' => $checks,
+            ];
+
+            if ($matched) {
+                $matchedRules[] = $rule;
+            }
+        }
+
+        return new MultiEvaluationResult($matchedRules, new Trace($trace));
+    }
+
+    /**
      * @param list<Condition|ConditionGroup> $nodes
      * @param array<string,mixed> $context
      * @return array{

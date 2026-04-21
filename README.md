@@ -210,6 +210,21 @@ RuleFlow also supports nested condition groups for cases like `A AND (B OR C)`:
 
 Nested groups are evaluated recursively and included in the execution trace.
 
+## Collect All Matches
+
+Use `evaluateAll()` when you need every matched rule instead of only the first one:
+
+```php
+$result = Engine::make(RuleSet::fromArray($rules))->evaluateAll($context);
+
+$result->matched();   // true
+$result->ruleNames(); // ['amount_review', 'risk_hold']
+$result->actions();   // ['manual_review', 'hold']
+$result->reasons();   // ['Amount threshold reached.', 'Risk score threshold reached.']
+```
+
+This is useful for risk scoring, moderation signals, and rule-based tagging scenarios.
+
 ## Custom Operators
 
 Register a custom operator when built-in operators are not enough:

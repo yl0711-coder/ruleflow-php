@@ -73,4 +73,37 @@ final class LaravelIntegrationTest extends TestCase
         self::assertTrue($result->matched());
         self::assertSame('manual_review', $result->action());
     }
+
+    public function testItCanEvaluateAllRulesThroughLaravelContainer(): void
+    {
+        $this->app['config']->set('ruleflow.rules', [
+            [
+                'name' => 'amount_review',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'manual_review',
+            ],
+            [
+                'name' => 'vip_review',
+                'conditions' => [
+                    ['field' => 'user.level', 'operator' => '>=', 'value' => 5],
+                ],
+                'action' => 'priority_review',
+            ],
+        ]);
+
+        $ruleFlow = $this->app->make(RuleFlow::class);
+        $result = $ruleFlow->evaluateAll([
+            'order' => [
+                'amount' => 1299,
+            ],
+            'user' => [
+                'level' => 6,
+            ],
+        ]);
+
+        self::assertTrue($result->matched());
+        self::assertSame(['amount_review', 'vip_review'], $result->ruleNames());
+    }
 }
