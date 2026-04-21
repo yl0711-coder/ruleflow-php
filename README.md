@@ -36,13 +36,11 @@ RuleFlow provides a small and predictable way to:
 composer require yl0711-coder/ruleflow-php
 ```
 
-> Packagist publishing is planned. If the package is not available on Packagist yet, install it from GitHub VCS.
-
 ### From GitHub VCS
 
 ```bash
 composer config repositories.ruleflow vcs https://github.com/yl0711-coder/ruleflow-php
-composer require yl0711-coder/ruleflow-php:^0.1
+composer require yl0711-coder/ruleflow-php:^0.2
 ```
 
 The package requires PHP 8.1 or later.
@@ -379,7 +377,7 @@ composer test-coverage
 
 - v0.1: core engine, built-in operators, trace output, array/JSON loaders, custom operators, rule validation
 - v0.2: nested rule groups, evaluateAll, existence operators, built-in regex, trace improvements, Laravel cache driver, artisan validation command, PHPStan, coverage CI
-- v0.3: benchmark suite, Packagist publishing, production tuning guide
+- v0.3: benchmark suite, production tuning guide
 - v1.0: stable rule format and semantic versioning guarantee
 
 ## License
