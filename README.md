@@ -178,6 +178,8 @@ RuleFlow v0.1 supports:
 
 `=` and `!=` use strict PHP comparison semantics (`===` / `!==`).
 
+See [docs/semantics.md](docs/semantics.md) for the full evaluation contract.
+
 ## Match Modes
 
 Each rule supports a `match` mode:
