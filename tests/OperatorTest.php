@@ -10,17 +10,19 @@ use RuleFlow\Operators\BetweenOperator;
 use RuleFlow\Operators\ContainsOperator;
 use RuleFlow\Operators\EndsWithOperator;
 use RuleFlow\Operators\EqualsOperator;
+use RuleFlow\Operators\ExistsOperator;
 use RuleFlow\Operators\GreaterThanOperator;
 use RuleFlow\Operators\GreaterThanOrEqualsOperator;
 use RuleFlow\Operators\InOperator;
 use RuleFlow\Operators\LessThanOperator;
 use RuleFlow\Operators\LessThanOrEqualsOperator;
 use RuleFlow\Operators\NotEqualsOperator;
+use RuleFlow\Operators\NotExistsOperator;
 use RuleFlow\Operators\NotInOperator;
 use RuleFlow\Operators\OperatorInterface;
 use RuleFlow\Operators\OperatorRegistry;
+use RuleFlow\Operators\RegexOperator;
 use RuleFlow\Operators\StartsWithOperator;
-use RuleFlow\Tests\Fixtures\RegexOperator;
 
 final class OperatorTest extends TestCase
 {
@@ -68,6 +70,12 @@ final class OperatorTest extends TestCase
         yield 'not in fails' => [NotInOperator::class, 'vip', ['vip', 'pro'], false];
         yield 'not in rejects non array expected' => [NotInOperator::class, 'vip', 'vip', false];
 
+        yield 'exists passes' => [ExistsOperator::class, true, null, true];
+        yield 'exists fails' => [ExistsOperator::class, false, null, false];
+
+        yield 'not exists passes' => [NotExistsOperator::class, false, null, true];
+        yield 'not exists fails' => [NotExistsOperator::class, true, null, false];
+
         yield 'contains passes for string' => [ContainsOperator::class, 'hello risk engine', 'risk', true];
         yield 'contains fails for string' => [ContainsOperator::class, 'hello risk engine', 'fraud', false];
         yield 'contains passes for array' => [ContainsOperator::class, ['risk', 'audit'], 'audit', true];
@@ -86,6 +94,10 @@ final class OperatorTest extends TestCase
         yield 'between fails when below range' => [BetweenOperator::class, 40, [50, 80], false];
         yield 'between rejects invalid expected' => [BetweenOperator::class, 60, [50], false];
         yield 'between rejects non numeric actual' => [BetweenOperator::class, 'abc', [50, 80], false];
+
+        yield 'regex passes' => [RegexOperator::class, 'ORD-1001', '/^ORD-[0-9]+$/', true];
+        yield 'regex fails' => [RegexOperator::class, 'PAY-1001', '/^ORD-[0-9]+$/', false];
+        yield 'regex rejects non string expected' => [RegexOperator::class, 'ORD-1001', 1001, false];
     }
 
     public function testOperatorRegistryAcceptsCustomOperators(): void

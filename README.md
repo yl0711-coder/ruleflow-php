@@ -160,10 +160,13 @@ RuleFlow v0.1 supports:
 - `<=`
 - `in`
 - `not_in`
+- `exists`
+- `not_exists`
 - `contains`
 - `starts_with`
 - `ends_with`
 - `between`
+- `regex`
 
 ## Match Modes
 

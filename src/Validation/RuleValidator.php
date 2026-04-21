@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace RuleFlow\Validation;
 
 use RuleFlow\Exceptions\InvalidRuleException;
+use RuleFlow\Operators\ExistsOperator;
+use RuleFlow\Operators\NotExistsOperator;
 use RuleFlow\Operators\OperatorRegistry;
 use RuleFlow\Rule;
 
@@ -202,6 +204,10 @@ final class RuleValidator
     private function validateCondition(array $condition, string $path, array &$errors): void
     {
         foreach (['field', 'operator', 'value'] as $key) {
+            if ($key === 'value' && $this->isOptionalValueOperator($condition)) {
+                continue;
+            }
+
             if (!array_key_exists($key, $condition)) {
                 $errors[] = "{$path}.{$key} is required.";
             }
@@ -225,5 +231,24 @@ final class RuleValidator
         if (!in_array($condition['operator'], $this->operators->names(), true)) {
             $errors[] = "{$path}.operator [{$condition['operator']}] is not registered.";
         }
+    }
+
+    /**
+     * @param array<string,mixed> $condition
+     */
+    private function isOptionalValueOperator(array $condition): bool
+    {
+        if (!array_key_exists('operator', $condition) || !is_string($condition['operator'])) {
+            return false;
+        }
+
+        return in_array(
+            $condition['operator'],
+            [
+                (new ExistsOperator())->name(),
+                (new NotExistsOperator())->name(),
+            ],
+            true
+        );
     }
 }

@@ -224,4 +224,52 @@ final class EngineTest extends TestCase
         self::assertSame('amount_review', $result->firstRule()?->name());
         self::assertCount(3, $result->trace()->toArray());
     }
+
+    public function testItSupportsExistsAndNotExistsOperators(): void
+    {
+        $rules = [
+            [
+                'name' => 'missing_phone',
+                'conditions' => [
+                    ['field' => 'user.phone', 'operator' => 'not_exists'],
+                ],
+                'action' => 'manual_review',
+            ],
+            [
+                'name' => 'email_present',
+                'conditions' => [
+                    ['field' => 'user.email', 'operator' => 'exists'],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluateAll([
+            'user' => ['email' => 'user@example.com'],
+        ]);
+
+        self::assertSame(['missing_phone', 'email_present'], $result->ruleNames());
+        self::assertFalse($result->trace()->toArray()[0]['checks'][0]['exists']);
+        self::assertTrue($result->trace()->toArray()[1]['checks'][0]['exists']);
+    }
+
+    public function testItSupportsBuiltInRegexOperator(): void
+    {
+        $rules = [
+            [
+                'name' => 'order_id_pattern',
+                'conditions' => [
+                    ['field' => 'order.id', 'operator' => 'regex', 'value' => '/^ORD-[0-9]+$/'],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'order' => ['id' => 'ORD-1001'],
+        ]);
+
+        self::assertTrue($result->matched());
+        self::assertSame('allow', $result->action());
+    }
 }

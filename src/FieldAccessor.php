@@ -13,6 +13,25 @@ final class FieldAccessor
      */
     public function get(array $context, string $path, mixed $default = null): mixed
     {
+        $result = $this->resolve($context, $path);
+
+        return $result['exists'] ? $result['value'] : $default;
+    }
+
+    /**
+     * @param array<string,mixed> $context
+     */
+    public function exists(array $context, string $path): bool
+    {
+        return $this->resolve($context, $path)['exists'];
+    }
+
+    /**
+     * @param array<string,mixed> $context
+     * @return array{exists:bool,value:mixed}
+     */
+    private function resolve(array $context, string $path): array
+    {
         $current = $context;
 
         foreach (explode('.', $path) as $segment) {
@@ -21,14 +40,20 @@ final class FieldAccessor
                 continue;
             }
 
-            if (is_object($current) && isset($current->{$segment})) {
+            if (is_object($current) && property_exists($current, $segment)) {
                 $current = $current->{$segment};
                 continue;
             }
 
-            return $default;
+            return [
+                'exists' => false,
+                'value' => null,
+            ];
         }
 
-        return $current;
+        return [
+            'exists' => true,
+            'value' => $current,
+        ];
     }
 }

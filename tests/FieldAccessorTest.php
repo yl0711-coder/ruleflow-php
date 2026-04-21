@@ -24,4 +24,15 @@ final class FieldAccessorTest extends TestCase
 
         self::assertSame('missing', $accessor->get([], 'user.risk_score', 'missing'));
     }
+
+    public function testItCanReportFieldExistence(): void
+    {
+        $accessor = new FieldAccessor();
+
+        self::assertTrue($accessor->exists([
+            'user' => ['risk_score' => null],
+        ], 'user.risk_score'));
+
+        self::assertFalse($accessor->exists([], 'user.risk_score'));
+    }
 }

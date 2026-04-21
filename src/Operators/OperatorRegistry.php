@@ -32,10 +32,13 @@ final class OperatorRegistry
             new LessThanOrEqualsOperator(),
             new InOperator(),
             new NotInOperator(),
+            new ExistsOperator(),
+            new NotExistsOperator(),
             new ContainsOperator(),
             new StartsWithOperator(),
             new EndsWithOperator(),
             new BetweenOperator(),
+            new RegexOperator(),
         ]);
     }
 

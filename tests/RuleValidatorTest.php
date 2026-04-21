@@ -111,6 +111,22 @@ final class RuleValidatorTest extends TestCase
         self::assertTrue($result->valid());
     }
 
+    public function testItAllowsExistsOperatorsWithoutValue(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'missing_phone',
+                'conditions' => [
+                    ['field' => 'user.phone', 'operator' => 'not_exists'],
+                    ['field' => 'user.email', 'operator' => 'exists'],
+                ],
+                'action' => 'manual_review',
+            ],
+        ]);
+
+        self::assertTrue($result->valid());
+    }
+
     public function testItReportsInvalidNestedConditionGroups(): void
     {
         $result = RuleValidator::defaults()->validate([
@@ -130,7 +146,13 @@ final class RuleValidatorTest extends TestCase
 
         self::assertFalse($result->valid());
         self::assertContains('rules[0].conditions[0].match must be either [all] or [any].', $result->errors());
-        self::assertContains('rules[0].conditions[0].conditions[0].field must be a non-empty string.', $result->errors());
-        self::assertContains('rules[0].conditions[0].conditions[0].operator [unknown] is not registered.', $result->errors());
+        self::assertContains(
+            'rules[0].conditions[0].conditions[0].field must be a non-empty string.',
+            $result->errors()
+        );
+        self::assertContains(
+            'rules[0].conditions[0].conditions[0].operator [unknown] is not registered.',
+            $result->errors()
+        );
     }
 }

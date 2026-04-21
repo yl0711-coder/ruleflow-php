@@ -11,7 +11,7 @@ final class Condition
     public function __construct(
         private readonly string $field,
         private readonly string $operator,
-        private readonly mixed $value
+        private readonly mixed $value = null
     ) {
         if ($field === '') {
             throw new InvalidRuleException('Condition field cannot be empty.');
@@ -23,11 +23,11 @@ final class Condition
     }
 
     /**
-     * @param array{field:string,operator:string,value:mixed} $definition
+     * @param array{field:string,operator:string,value?:mixed} $definition
      */
     public static function fromArray(array $definition): self
     {
-        foreach (['field', 'operator', 'value'] as $key) {
+        foreach (['field', 'operator'] as $key) {
             if (!array_key_exists($key, $definition)) {
                 throw new InvalidRuleException("Condition is missing required key [{$key}].");
             }
@@ -44,7 +44,7 @@ final class Condition
         return new self(
             (string) $definition['field'],
             (string) $definition['operator'],
-            $definition['value']
+            $definition['value'] ?? null
         );
     }
 

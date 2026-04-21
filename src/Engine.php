@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RuleFlow;
 
+use RuleFlow\Operators\ExistsOperator;
+use RuleFlow\Operators\NotExistsOperator;
 use RuleFlow\Operators\OperatorRegistry;
 
 final class Engine
@@ -134,12 +136,15 @@ final class Engine
 
                 $passed = $groupMatched;
             } else {
+                $exists = $this->fields->exists($context, $node->field());
                 $actual = $this->fields->get($context, $node->field());
                 $operator = $this->operators->get($node->operator());
-                $passed = $operator->evaluate($actual, $node->value());
+                $operatorInput = $this->usesExistenceInput($node->operator()) ? $exists : $actual;
+                $passed = $operator->evaluate($operatorInput, $node->value());
 
                 $checks[] = [
                     'field' => $node->field(),
+                    'exists' => $exists,
                     'actual' => $actual,
                     'operator' => $node->operator(),
                     'expected' => $node->value(),
@@ -158,5 +163,17 @@ final class Engine
             'matched' => $matched,
             'checks' => $checks,
         ];
+    }
+
+    private function usesExistenceInput(string $operator): bool
+    {
+        return in_array(
+            $operator,
+            [
+                (new ExistsOperator())->name(),
+                (new NotExistsOperator())->name(),
+            ],
+            true
+        );
     }
 }
