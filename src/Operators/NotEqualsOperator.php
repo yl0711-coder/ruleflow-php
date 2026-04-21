@@ -13,6 +13,6 @@ final class NotEqualsOperator implements OperatorInterface
 
     public function evaluate(mixed $actual, mixed $expected): bool
     {
-        return $actual != $expected;
+        return $actual !== $expected;
     }
 }

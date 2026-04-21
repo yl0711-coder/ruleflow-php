@@ -176,6 +176,8 @@ RuleFlow v0.1 supports:
 - `between`
 - `regex`
 
+`=` and `!=` use strict PHP comparison semantics (`===` / `!==`).
+
 ## Match Modes
 
 Each rule supports a `match` mode:

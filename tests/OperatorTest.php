@@ -40,11 +40,13 @@ final class OperatorTest extends TestCase
      */
     public static function operatorCases(): iterable
     {
-        yield 'equals passes with loose comparison' => [EqualsOperator::class, '123', 123, true];
+        yield 'equals passes with strict comparison' => [EqualsOperator::class, '123', '123', true];
+        yield 'equals fails with different types' => [EqualsOperator::class, '123', 123, false];
         yield 'equals fails' => [EqualsOperator::class, '123', 456, false];
 
         yield 'not equals passes' => [NotEqualsOperator::class, '123', 456, true];
-        yield 'not equals fails with loose comparison' => [NotEqualsOperator::class, '123', 123, false];
+        yield 'not equals passes with different types' => [NotEqualsOperator::class, '123', 123, true];
+        yield 'not equals fails with strict comparison' => [NotEqualsOperator::class, '123', '123', false];
 
         yield 'greater than passes' => [GreaterThanOperator::class, 10, 5, true];
         yield 'greater than fails' => [GreaterThanOperator::class, 5, 10, false];
