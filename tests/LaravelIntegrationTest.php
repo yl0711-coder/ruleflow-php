@@ -6,8 +6,11 @@ namespace RuleFlow\Tests;
 
 use Orchestra\Testbench\TestCase;
 use RuleFlow\Laravel\Facades\RuleFlow as RuleFlowFacade;
+use RuleFlow\Laravel\LaravelRuleSetCache;
 use RuleFlow\Laravel\RuleFlowServiceProvider;
+use RuleFlow\Loaders\RuleSetCacheInterface;
 use RuleFlow\RuleFlow;
+use RuleFlow\RuleSet;
 
 final class LaravelIntegrationTest extends TestCase
 {
@@ -105,5 +108,32 @@ final class LaravelIntegrationTest extends TestCase
 
         self::assertTrue($result->matched());
         self::assertSame(['amount_review', 'vip_review'], $result->ruleNames());
+    }
+
+    public function testItUsesLaravelCacheDriverWhenConfigured(): void
+    {
+        $this->app['config']->set('cache.default', 'array');
+        $this->app['config']->set('ruleflow.cache.enabled', true);
+        $this->app['config']->set('ruleflow.cache.driver', 'laravel');
+        $this->app['config']->set('ruleflow.cache.store', 'array');
+
+        $cache = $this->app->make(RuleSetCacheInterface::class);
+
+        self::assertInstanceOf(LaravelRuleSetCache::class, $cache);
+
+        $ruleSet = RuleSet::fromArray([
+            [
+                'name' => 'cached_rule',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        $cache->put('ruleflow.test', $ruleSet, 60);
+
+        self::assertInstanceOf(RuleSet::class, $cache->get('ruleflow.test'));
+        self::assertSame('cached_rule', $cache->get('ruleflow.test')?->rules()[0]->name());
     }
 }

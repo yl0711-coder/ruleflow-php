@@ -14,6 +14,8 @@ return [
 
     'cache' => [
         'enabled' => false,
+        'driver' => 'in_memory',
+        'store' => null,
         'key' => 'ruleflow.rules',
         'ttl' => 300,
     ],

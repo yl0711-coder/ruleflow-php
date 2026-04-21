@@ -8,6 +8,8 @@ use Illuminate\Support\ServiceProvider;
 use RuleFlow\Loaders\ArrayRuleLoader;
 use RuleFlow\Loaders\CachedRuleLoader;
 use RuleFlow\Loaders\InMemoryRuleSetCache;
+use RuleFlow\Loaders\RuleLoaderInterface;
+use RuleFlow\Loaders\RuleSetCacheInterface;
 use RuleFlow\RuleFlow;
 
 final class RuleFlowServiceProvider extends ServiceProvider
@@ -16,13 +18,32 @@ final class RuleFlowServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../../config/ruleflow.php', 'ruleflow');
 
+        $this->app->singleton(RuleLoaderInterface::class, function (): RuleLoaderInterface {
+            return new ArrayRuleLoader((array) config('ruleflow.rules', []));
+        });
+
+        $this->app->singleton(RuleSetCacheInterface::class, function (): RuleSetCacheInterface {
+            $driver = (string) config('ruleflow.cache.driver', 'in_memory');
+
+            if ($driver === 'laravel') {
+                $store = config('ruleflow.cache.store');
+                $repository = $store !== null
+                    ? $this->app['cache']->store((string) $store)
+                    : $this->app['cache']->store();
+
+                return new LaravelRuleSetCache($repository);
+            }
+
+            return new InMemoryRuleSetCache();
+        });
+
         $this->app->singleton(RuleFlow::class, function (): RuleFlow {
-            $loader = new ArrayRuleLoader((array) config('ruleflow.rules', []));
+            $loader = $this->app->make(RuleLoaderInterface::class);
 
             if ((bool) config('ruleflow.cache.enabled', false)) {
                 $loader = new CachedRuleLoader(
                     $loader,
-                    new InMemoryRuleSetCache(),
+                    $this->app->make(RuleSetCacheInterface::class),
                     (string) config('ruleflow.cache.key', 'ruleflow.rules'),
                     (int) config('ruleflow.cache.ttl', 300)
                 );

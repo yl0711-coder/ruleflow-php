@@ -306,6 +306,18 @@ Define rules in `config/ruleflow.php`:
 ],
 ```
 
+Optional cache settings:
+
+```php
+'cache' => [
+    'enabled' => true,
+    'driver' => 'laravel', // or 'in_memory'
+    'store' => 'redis',    // optional, uses default cache store when null
+    'key' => 'ruleflow.rules',
+    'ttl' => 300,
+],
+```
+
 Evaluate rules:
 
 ```php
