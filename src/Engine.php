@@ -64,8 +64,10 @@ final class Engine
         $matchedRules = [];
 
         foreach ($this->ruleSet->rules() as $rule) {
+            $ruleStartedAt = hrtime(true);
+
             if (!$rule->enabled()) {
-                $trace[] = $this->skippedTraceEntry($rule);
+                $trace[] = $this->skippedTraceEntry($rule, $ruleStartedAt);
                 continue;
             }
 
@@ -75,22 +77,31 @@ final class Engine
                 $context
             );
 
-            $trace[] = [
+            $traceEntry = [
                 'rule' => $rule->name(),
+                'priority' => $rule->priority(),
                 'matched' => $matched,
                 'match' => $rule->match(),
+                'action' => $rule->action(),
+                'reason' => $rule->reason(),
+                'duration_ms' => $this->durationSince($ruleStartedAt),
                 'checks' => $checks,
             ];
 
             if (!$matched) {
+                $trace[] = $traceEntry;
                 continue;
             }
 
             $matchedRules[] = $rule;
 
             if (!$collectAll) {
+                $traceEntry['stop_reason'] = 'first_match';
+                $trace[] = $traceEntry;
                 break;
             }
+
+            $trace[] = $traceEntry;
         }
 
         return [
@@ -113,6 +124,8 @@ final class Engine
         $matched = $match === Rule::MATCH_ALL;
 
         foreach ($nodes as $node) {
+            $checkStartedAt = hrtime(true);
+
             if ($node instanceof ConditionGroup) {
                 ['matched' => $groupMatched, 'checks' => $groupChecks] = $this->evaluateNodes(
                     $node->conditions(),
@@ -124,6 +137,7 @@ final class Engine
                     'type' => 'group',
                     'match' => $node->match(),
                     'passed' => $groupMatched,
+                    'duration_ms' => $this->durationSince($checkStartedAt),
                     'checks' => $groupChecks,
                 ];
 
@@ -143,6 +157,7 @@ final class Engine
                     'operator' => $node->operator(),
                     'expected' => $node->value(),
                     'passed' => $passed,
+                    'duration_ms' => $this->durationSince($checkStartedAt),
                 ];
             }
 
@@ -177,17 +192,25 @@ final class Engine
      *     matched:bool,
      *     skipped:bool,
      *     skipped_reason:string,
+     *     duration_ms:float,
      *     checks:list<array<string,mixed>>
      * }
      */
-    private function skippedTraceEntry(Rule $rule): array
+    private function skippedTraceEntry(Rule $rule, int $startedAt): array
     {
         return [
             'rule' => $rule->name(),
+            'priority' => $rule->priority(),
             'matched' => false,
             'skipped' => true,
             'skipped_reason' => 'disabled',
+            'duration_ms' => $this->durationSince($startedAt),
             'checks' => [],
         ];
+    }
+
+    private function durationSince(int $startedAt): float
+    {
+        return round((hrtime(true) - $startedAt) / 1_000_000, 3);
     }
 }

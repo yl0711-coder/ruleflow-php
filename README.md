@@ -125,8 +125,13 @@ Example output:
     'trace' => [
         [
             'rule' => 'high_risk_order',
+            'priority' => 0,
             'matched' => true,
             'match' => 'all',
+            'action' => 'reject',
+            'reason' => 'High-risk order requires manual review.',
+            'duration_ms' => 0.042,
+            'stop_reason' => 'first_match',
             'checks' => [
                 [
                     'field' => 'order.amount',
@@ -136,6 +141,7 @@ Example output:
                     'operator' => '>',
                     'expected' => 1000,
                     'passed' => true,
+                    'duration_ms' => 0.011,
                 ],
                 [
                     'field' => 'user.risk_score',
@@ -145,6 +151,7 @@ Example output:
                     'operator' => '<',
                     'expected' => 60,
                     'passed' => true,
+                    'duration_ms' => 0.009,
                 ],
             ],
         ],
@@ -155,6 +162,17 @@ Example output:
 When a field does not exist, the trace explicitly marks it with `exists: false` and
 `missing: true`. Disabled rules are marked with `skipped: true` and
 `skipped_reason: "disabled"`.
+
+You can also use trace helpers for operational debugging:
+
+```php
+$trace = $result->trace();
+
+$trace->matchedRuleNames(); // ['high_risk_order']
+$trace->failedEntries();    // rules evaluated but not matched
+$trace->skippedEntries();   // disabled rules
+$trace->summary();          // matched, failed, skipped, and total duration
+```
 
 ## Supported Operators
 

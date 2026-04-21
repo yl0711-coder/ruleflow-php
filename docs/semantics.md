@@ -22,6 +22,14 @@ Nested condition groups use the same `match` semantics as top-level rules.
 
 `evaluate()` returns the first matched rule and stops evaluation.
 
+The matched trace entry includes:
+
+```php
+[
+    'stop_reason' => 'first_match',
+]
+```
+
 `evaluateAll()` evaluates all enabled rules and returns every matched rule in
 evaluation order.
 
@@ -33,6 +41,26 @@ Disabled rules are skipped and included in the trace with:
     'skipped_reason' => 'disabled',
 ]
 ```
+
+## Trace Diagnostics
+
+Every evaluated rule trace entry includes rule metadata and elapsed time:
+
+```php
+[
+    'rule' => 'high_risk_order',
+    'priority' => 100,
+    'matched' => true,
+    'action' => 'manual_review',
+    'reason' => 'Risk threshold reached.',
+    'duration_ms' => 0.042,
+]
+```
+
+Each condition and nested group also includes `duration_ms`.
+
+Use `Trace::summary()` for a compact debugging view with matched, failed,
+skipped, and total duration data.
 
 ## Field Resolution
 

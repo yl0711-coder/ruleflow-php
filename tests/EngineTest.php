@@ -71,6 +71,9 @@ final class EngineTest extends TestCase
         self::assertTrue($trace[0]['checks'][0]['passed']);
         self::assertSame(1299, $trace[0]['checks'][0]['actual']);
         self::assertSame(1000, $trace[0]['checks'][0]['expected']);
+        self::assertSame('reject', $trace[0]['action']);
+        self::assertArrayHasKey('duration_ms', $trace[0]);
+        self::assertArrayHasKey('duration_ms', $trace[0]['checks'][0]);
     }
 
     public function testItReturnsNoMatchWhenConditionsFail(): void
@@ -306,5 +309,81 @@ final class EngineTest extends TestCase
         self::assertTrue($trace[0]['skipped']);
         self::assertSame('disabled', $trace[0]['skipped_reason']);
         self::assertSame('active_rule', $trace[1]['rule']);
+    }
+
+    public function testTraceSummarizesMatchedFailedAndSkippedRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'disabled_rule',
+                'enabled' => false,
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'skip',
+            ],
+            [
+                'name' => 'matched_rule',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'failed_rule',
+                'conditions' => [
+                    ['field' => 'user.country', 'operator' => '=', 'value' => 'US'],
+                ],
+                'action' => 'review',
+            ],
+        ];
+
+        $trace = Engine::make(RuleSet::fromArray($rules))
+            ->evaluateAll(['user' => ['id' => 1, 'country' => 'CN']])
+            ->trace();
+
+        self::assertSame(['matched_rule'], $trace->matchedRuleNames());
+        self::assertCount(1, $trace->matchedEntries());
+        self::assertCount(1, $trace->failedEntries());
+        self::assertCount(1, $trace->skippedEntries());
+        self::assertSame(
+            [
+                'evaluated_rules' => 3,
+                'matched_rules' => ['matched_rule'],
+                'failed_rules' => ['failed_rule'],
+                'skipped_rules' => ['disabled_rule'],
+                'duration_ms' => $trace->durationMs(),
+            ],
+            $trace->summary()
+        );
+    }
+
+    public function testTraceIncludesStopReasonWhenEvaluateStopsAtFirstMatch(): void
+    {
+        $rules = [
+            [
+                'name' => 'matched_rule',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'not_reached',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'review',
+            ],
+        ];
+
+        $trace = Engine::make(RuleSet::fromArray($rules))
+            ->evaluate(['user' => ['id' => 1]])
+            ->trace()
+            ->toArray();
+
+        self::assertCount(1, $trace);
+        self::assertSame('matched_rule', $trace[0]['rule']);
+        self::assertSame('first_match', $trace[0]['stop_reason']);
     }
 }
