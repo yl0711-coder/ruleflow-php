@@ -4,6 +4,10 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
+- No unreleased changes yet.
+
+## v0.3.0 - 2026-04-22
+
 - Added richer trace diagnostics with rule duration, action, reason, priority, and first-match stop reason.
 - Added trace helper methods for matched, failed, skipped, and summary views.
 - Added trace failure reasons for unmatched rules and failed conditions.
