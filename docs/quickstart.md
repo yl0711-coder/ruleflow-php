@@ -45,7 +45,10 @@ if ($result->matched()) {
 }
 ```
 
-Use `$result->trace()->toArray()` when you need to debug why a rule matched or failed.
+Use `$result->explain()` when you need a compact decision summary.
+Use `$result->trace()->toArray()` when you need to debug every evaluated rule and condition.
+
+See [explain.md](explain.md) for the difference between explain and trace output.
 
 ## Validate Rules
 

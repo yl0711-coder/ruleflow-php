@@ -51,12 +51,13 @@
     "scripts": {
         "test": "vendor/bin/phpunit",
         "test-coverage": "vendor/bin/phpunit --coverage-clover build/logs/clover.xml",
-        "lint": "vendor/bin/phpcs --standard=PSR12 src tests",
+        "lint": "vendor/bin/phpcs --standard=PSR12 src tests examples",
         "analyse": "vendor/bin/phpstan analyse --configuration=phpstan.neon.dist --debug --no-progress",
         "examples": [
             "php examples/order-risk.php",
             "php examples/content-moderation.php",
-            "php examples/json-loader.php"
+            "php examples/json-loader.php",
+            "php examples/explain.php"
         ]
     },
     "minimum-stability": "stable",

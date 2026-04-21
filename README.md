@@ -228,6 +228,8 @@ Example output:
 `trace()` keeps the full execution detail. `explain()` keeps the decision
 summary small and stable for operational use.
 
+See [docs/explain.md](docs/explain.md) and [examples/explain.php](examples/explain.php).
+
 ## Supported Operators
 
 RuleFlow v0.1 supports:
@@ -439,6 +441,7 @@ Run examples:
 php examples/order-risk.php
 php examples/content-moderation.php
 php examples/json-loader.php
+php examples/explain.php
 ```
 
 Generate coverage locally when Xdebug or PCOV is available:
@@ -459,7 +462,7 @@ See [docs/benchmark.md](docs/benchmark.md).
 
 - v0.1: core engine, built-in operators, trace output, array/JSON loaders, custom operators, rule validation
 - v0.2: nested rule groups, evaluateAll, existence operators, built-in regex, trace improvements, Laravel cache driver, artisan validation command, PHPStan, coverage CI
-- v0.3: benchmark suite, production tuning guide
+- v0.3: richer trace diagnostics, failure reasons, compact explain output, benchmark suite, production tuning guide
 - v1.0: stable rule format and semantic versioning guarantee
 
 ## License
