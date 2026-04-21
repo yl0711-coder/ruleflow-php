@@ -324,6 +324,12 @@ Evaluate rules:
 $result = app(\RuleFlow\RuleFlow::class)->evaluate($context);
 ```
 
+Validate configured rules:
+
+```bash
+php artisan ruleflow:validate
+```
+
 ## Use Cases
 
 - Risk control: reject or review suspicious orders, users, or API requests.

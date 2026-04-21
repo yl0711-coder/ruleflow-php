@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RuleFlow\Laravel;
 
 use Illuminate\Support\ServiceProvider;
+use RuleFlow\Laravel\Commands\ValidateRulesCommand;
 use RuleFlow\Loaders\ArrayRuleLoader;
 use RuleFlow\Loaders\CachedRuleLoader;
 use RuleFlow\Loaders\InMemoryRuleSetCache;
@@ -58,5 +59,11 @@ final class RuleFlowServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../config/ruleflow.php' => config_path('ruleflow.php'),
         ], 'ruleflow-config');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                ValidateRulesCommand::class,
+            ]);
+        }
     }
 }

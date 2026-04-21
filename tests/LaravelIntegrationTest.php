@@ -136,4 +136,32 @@ final class LaravelIntegrationTest extends TestCase
         self::assertInstanceOf(RuleSet::class, $cache->get('ruleflow.test'));
         self::assertSame('cached_rule', $cache->get('ruleflow.test')?->rules()[0]->name());
     }
+
+    public function testItProvidesAnArtisanValidationCommand(): void
+    {
+        $this->artisan('ruleflow:validate')
+            ->expectsOutput('RuleFlow validation passed. 1 rule(s) checked.')
+            ->assertSuccessful();
+    }
+
+    public function testItReportsValidationErrorsThroughArtisanCommand(): void
+    {
+        $this->app['config']->set('ruleflow.rules', [
+            [
+                'name' => '',
+                'conditions' => [
+                    ['field' => '', 'operator' => 'unknown', 'value' => true],
+                ],
+                'action' => '',
+            ],
+        ]);
+
+        $this->artisan('ruleflow:validate')
+            ->expectsOutput('RuleFlow validation failed.')
+            ->expectsOutput('- rules[0].name must be a non-empty string.')
+            ->expectsOutput('- rules[0].action must be a non-empty string.')
+            ->expectsOutput('- rules[0].conditions[0].field must be a non-empty string.')
+            ->expectsOutput('- rules[0].conditions[0].operator [unknown] is not registered.')
+            ->assertFailed();
+    }
 }
