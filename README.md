@@ -179,6 +179,55 @@ $trace->skippedEntries();   // disabled rules
 $trace->summary();          // matched, failed, skipped, and total duration
 ```
 
+## Explain Output
+
+Use `explain()` when you want a compact decision summary for logs, API
+responses, or support tooling:
+
+```php
+$explain = $result->explain();
+```
+
+Example output:
+
+```php
+[
+    'matched' => false,
+    'rule' => null,
+    'matched_rules' => [],
+    'action' => null,
+    'reason' => null,
+    'failure_reason' => 'field_missing',
+    'summary' => [
+        'evaluated_rules' => 1,
+        'matched_rules' => [],
+        'failed_rules' => ['missing_phone'],
+        'skipped_rules' => [],
+        'duration_ms' => 0.031,
+    ],
+    'rule_explanations' => [
+        [
+            'rule' => 'missing_phone',
+            'matched' => false,
+            'skipped' => false,
+            'failure_reason' => 'field_missing',
+            'failed_checks' => [
+                [
+                    'field' => 'user.phone',
+                    'operator' => 'exists',
+                    'expected' => null,
+                    'actual' => null,
+                    'failure_reason' => 'field_missing',
+                ],
+            ],
+        ],
+    ],
+]
+```
+
+`trace()` keeps the full execution detail. `explain()` keeps the decision
+summary small and stable for operational use.
+
 ## Supported Operators
 
 RuleFlow v0.1 supports:

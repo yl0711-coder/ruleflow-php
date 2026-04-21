@@ -62,6 +62,18 @@ Each condition and nested group also includes `duration_ms`.
 Use `Trace::summary()` for a compact debugging view with matched, failed,
 skipped, and total duration data.
 
+Use `EvaluationResult::explain()` or `MultiEvaluationResult::explain()` when
+you need a compact decision summary instead of the full trace payload.
+
+`explain()` includes:
+
+- The final match result.
+- The matched rule or matched rule list.
+- The selected action and reason.
+- The first top-level `failure_reason`, when available.
+- A trace summary.
+- A compact list of rules and failed checks.
+
 Failed rule and condition entries include `failure_reason` when RuleFlow can
 infer a useful reason:
 

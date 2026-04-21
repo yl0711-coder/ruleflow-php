@@ -99,6 +99,37 @@ final class Trace
         ];
     }
 
+    /**
+     * @return list<array{
+     *     rule:string,
+     *     matched:bool,
+     *     skipped:bool,
+     *     failure_reason:?string,
+     *     failed_checks:list<array{
+     *         field?:string,
+     *         operator?:string,
+     *         expected?:mixed,
+     *         actual?:mixed,
+     *         failure_reason:?string
+     *     }>
+     * }>
+     */
+    public function explainEntries(): array
+    {
+        return array_values(
+            array_map(
+                fn (array $entry): array => [
+                    'rule' => (string) $entry['rule'],
+                    'matched' => (bool) $entry['matched'],
+                    'skipped' => ($entry['skipped'] ?? false) === true,
+                    'failure_reason' => $this->stringOrNull($entry['failure_reason'] ?? null),
+                    'failed_checks' => $this->failedChecks($entry['checks']),
+                ],
+                $this->entries
+            )
+        );
+    }
+
     public function durationMs(): float
     {
         $duration = 0.0;
@@ -134,5 +165,53 @@ final class Trace
                 $entries
             )
         );
+    }
+
+    /**
+     * @param list<array<string,mixed>> $checks
+     * @return list<array{
+     *     field?:string,
+     *     operator?:string,
+     *     expected?:mixed,
+     *     actual?:mixed,
+     *     failure_reason:?string
+     * }>
+     */
+    private function failedChecks(array $checks): array
+    {
+        $failedChecks = [];
+
+        foreach ($checks as $check) {
+            if (($check['passed'] ?? false) === true) {
+                continue;
+            }
+
+            if (isset($check['checks']) && is_array($check['checks'])) {
+                foreach ($this->failedChecks($check['checks']) as $failedCheck) {
+                    $failedChecks[] = $failedCheck;
+                }
+
+                continue;
+            }
+
+            $failedCheck = [
+                'failure_reason' => $this->stringOrNull($check['failure_reason'] ?? null),
+            ];
+
+            foreach (['field', 'operator', 'expected', 'actual'] as $key) {
+                if (array_key_exists($key, $check)) {
+                    $failedCheck[$key] = $check[$key];
+                }
+            }
+
+            $failedChecks[] = $failedCheck;
+        }
+
+        return $failedChecks;
+    }
+
+    private function stringOrNull(mixed $value): ?string
+    {
+        return is_string($value) ? $value : null;
     }
 }

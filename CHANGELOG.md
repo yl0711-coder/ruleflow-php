@@ -7,6 +7,7 @@ All notable changes to RuleFlow PHP will be documented in this file.
 - Added richer trace diagnostics with rule duration, action, reason, priority, and first-match stop reason.
 - Added trace helper methods for matched, failed, skipped, and summary views.
 - Added trace failure reasons for unmatched rules and failed conditions.
+- Added compact `explain()` output for single-rule and multi-rule evaluation results.
 
 ## v0.2.2 - 2026-04-21
 

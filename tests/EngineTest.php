@@ -456,4 +456,101 @@ final class EngineTest extends TestCase
         self::assertSame('value_mismatch', $trace[0]['checks'][0]['checks'][0]['failure_reason']);
         self::assertSame('value_not_contained', $trace[0]['checks'][0]['checks'][1]['failure_reason']);
     }
+
+    public function testEvaluationResultCanExplainMatchedDecision(): void
+    {
+        $rules = [
+            [
+                'name' => 'high_risk_order',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'manual_review',
+                'reason' => 'Amount threshold reached.',
+            ],
+        ];
+
+        $explain = Engine::make(RuleSet::fromArray($rules))
+            ->evaluate(['order' => ['amount' => 1299]])
+            ->explain();
+
+        self::assertTrue($explain['matched']);
+        self::assertSame('high_risk_order', $explain['rule']);
+        self::assertSame(['high_risk_order'], $explain['matched_rules']);
+        self::assertSame('manual_review', $explain['action']);
+        self::assertSame('Amount threshold reached.', $explain['reason']);
+        self::assertNull($explain['failure_reason']);
+        self::assertSame(['high_risk_order'], $explain['summary']['matched_rules']);
+        self::assertSame('high_risk_order', $explain['rule_explanations'][0]['rule']);
+        self::assertTrue($explain['rule_explanations'][0]['matched']);
+        self::assertSame([], $explain['rule_explanations'][0]['failed_checks']);
+    }
+
+    public function testEvaluationResultCanExplainFailedDecision(): void
+    {
+        $rules = [
+            [
+                'name' => 'missing_phone',
+                'conditions' => [
+                    ['field' => 'user.phone', 'operator' => 'exists'],
+                ],
+                'action' => 'manual_review',
+            ],
+        ];
+
+        $explain = Engine::make(RuleSet::fromArray($rules))
+            ->evaluate(['user' => ['email' => 'user@example.com']])
+            ->explain();
+
+        self::assertFalse($explain['matched']);
+        self::assertNull($explain['rule']);
+        self::assertSame('field_missing', $explain['failure_reason']);
+        self::assertSame(['missing_phone'], $explain['summary']['failed_rules']);
+        self::assertSame('missing_phone', $explain['rule_explanations'][0]['rule']);
+        self::assertFalse($explain['rule_explanations'][0]['matched']);
+        self::assertSame('field_missing', $explain['rule_explanations'][0]['failure_reason']);
+        self::assertSame('user.phone', $explain['rule_explanations'][0]['failed_checks'][0]['field']);
+        self::assertSame('exists', $explain['rule_explanations'][0]['failed_checks'][0]['operator']);
+        self::assertSame('field_missing', $explain['rule_explanations'][0]['failed_checks'][0]['failure_reason']);
+    }
+
+    public function testMultiEvaluationResultCanExplainAllEvaluatedRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'amount_review',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'manual_review',
+            ],
+            [
+                'name' => 'country_review',
+                'conditions' => [
+                    ['field' => 'user.country', 'operator' => 'in', 'value' => ['US']],
+                ],
+                'action' => 'review',
+            ],
+        ];
+
+        $explain = Engine::make(RuleSet::fromArray($rules))
+            ->evaluateAll([
+                'order' => ['amount' => 1299],
+                'user' => ['country' => 'CN'],
+            ])
+            ->explain();
+
+        self::assertTrue($explain['matched']);
+        self::assertSame(['amount_review'], $explain['matched_rules']);
+        self::assertSame(['manual_review'], $explain['actions']);
+        self::assertSame('value_not_allowed', $explain['failure_reason']);
+        self::assertSame(['amount_review'], $explain['summary']['matched_rules']);
+        self::assertSame(['country_review'], $explain['summary']['failed_rules']);
+        self::assertSame('amount_review', $explain['rule_explanations'][0]['rule']);
+        self::assertSame('country_review', $explain['rule_explanations'][1]['rule']);
+        self::assertSame(
+            'value_not_allowed',
+            $explain['rule_explanations'][1]['failed_checks'][0]['failure_reason']
+        );
+    }
 }

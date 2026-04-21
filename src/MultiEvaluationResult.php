@@ -83,6 +83,38 @@ final class MultiEvaluationResult
      *     matched_rules:list<string>,
      *     actions:list<string>,
      *     reasons:list<string>,
+     *     failure_reason:?string,
+     *     summary:array{
+     *         evaluated_rules:int,
+     *         matched_rules:list<string>,
+     *         failed_rules:list<string>,
+     *         skipped_rules:list<string>,
+     *         duration_ms:float
+     *     },
+     *     rule_explanations:list<array<string,mixed>>
+     * }
+     */
+    public function explain(): array
+    {
+        return [
+            'matched' => $this->matched(),
+            'rules' => $this->ruleNames(),
+            'matched_rules' => $this->ruleNames(),
+            'actions' => $this->actions(),
+            'reasons' => $this->reasons(),
+            'failure_reason' => $this->failureReason(),
+            'summary' => $this->trace->summary(),
+            'rule_explanations' => $this->trace->explainEntries(),
+        ];
+    }
+
+    /**
+     * @return array{
+     *     matched:bool,
+     *     rules:list<string>,
+     *     matched_rules:list<string>,
+     *     actions:list<string>,
+     *     reasons:list<string>,
      *     trace:list<array<string,mixed>>
      * }
      */
@@ -96,5 +128,18 @@ final class MultiEvaluationResult
             'reasons' => $this->reasons(),
             'trace' => $this->trace->toArray(),
         ];
+    }
+
+    private function failureReason(): ?string
+    {
+        foreach ($this->trace->failedEntries() as $entry) {
+            $failureReason = $entry['failure_reason'] ?? null;
+
+            if (is_string($failureReason)) {
+                return $failureReason;
+            }
+        }
+
+        return null;
     }
 }
