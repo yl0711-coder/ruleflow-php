@@ -66,6 +66,8 @@ final class EngineTest extends TestCase
 
         self::assertCount(1, $trace);
         self::assertTrue($trace[0]['matched']);
+        self::assertTrue($trace[0]['checks'][0]['exists']);
+        self::assertFalse($trace[0]['checks'][0]['missing']);
         self::assertTrue($trace[0]['checks'][0]['passed']);
         self::assertSame(1299, $trace[0]['checks'][0]['actual']);
         self::assertSame(1000, $trace[0]['checks'][0]['expected']);
@@ -250,7 +252,9 @@ final class EngineTest extends TestCase
 
         self::assertSame(['missing_phone', 'email_present'], $result->ruleNames());
         self::assertFalse($result->trace()->toArray()[0]['checks'][0]['exists']);
+        self::assertTrue($result->trace()->toArray()[0]['checks'][0]['missing']);
         self::assertTrue($result->trace()->toArray()[1]['checks'][0]['exists']);
+        self::assertFalse($result->trace()->toArray()[1]['checks'][0]['missing']);
     }
 
     public function testItSupportsBuiltInRegexOperator(): void
@@ -271,5 +275,36 @@ final class EngineTest extends TestCase
 
         self::assertTrue($result->matched());
         self::assertSame('allow', $result->action());
+    }
+
+    public function testItIncludesSkippedReasonForDisabledRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'disabled_rule',
+                'enabled' => false,
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'active_rule',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => '>', 'value' => 0],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'user' => ['id' => 1],
+        ]);
+
+        $trace = $result->trace()->toArray();
+
+        self::assertTrue($trace[0]['skipped']);
+        self::assertSame('disabled', $trace[0]['skipped_reason']);
+        self::assertSame('active_rule', $trace[1]['rule']);
     }
 }

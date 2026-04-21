@@ -130,6 +130,8 @@ Example output:
             'checks' => [
                 [
                     'field' => 'order.amount',
+                    'exists' => true,
+                    'missing' => false,
                     'actual' => 1299,
                     'operator' => '>',
                     'expected' => 1000,
@@ -137,6 +139,8 @@ Example output:
                 ],
                 [
                     'field' => 'user.risk_score',
+                    'exists' => true,
+                    'missing' => false,
                     'actual' => 45,
                     'operator' => '<',
                     'expected' => 60,
@@ -147,6 +151,10 @@ Example output:
     ],
 ]
 ```
+
+When a field does not exist, the trace explicitly marks it with `exists: false` and
+`missing: true`. Disabled rules are marked with `skipped: true` and
+`skipped_reason: "disabled"`.
 
 ## Supported Operators
 

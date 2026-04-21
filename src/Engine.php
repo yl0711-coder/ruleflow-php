@@ -36,12 +36,7 @@ final class Engine
 
         foreach ($this->ruleSet->rules() as $rule) {
             if (!$rule->enabled()) {
-                $trace[] = [
-                    'rule' => $rule->name(),
-                    'matched' => false,
-                    'skipped' => true,
-                    'checks' => [],
-                ];
+                $trace[] = $this->skippedTraceEntry($rule);
                 continue;
             }
 
@@ -76,12 +71,7 @@ final class Engine
 
         foreach ($this->ruleSet->rules() as $rule) {
             if (!$rule->enabled()) {
-                $trace[] = [
-                    'rule' => $rule->name(),
-                    'matched' => false,
-                    'skipped' => true,
-                    'checks' => [],
-                ];
+                $trace[] = $this->skippedTraceEntry($rule);
                 continue;
             }
 
@@ -145,6 +135,7 @@ final class Engine
                 $checks[] = [
                     'field' => $node->field(),
                     'exists' => $exists,
+                    'missing' => !$exists,
                     'actual' => $actual,
                     'operator' => $node->operator(),
                     'expected' => $node->value(),
@@ -175,5 +166,25 @@ final class Engine
             ],
             true
         );
+    }
+
+    /**
+     * @return array{
+     *     rule:string,
+     *     matched:bool,
+     *     skipped:bool,
+     *     skipped_reason:string,
+     *     checks:list<array<string,mixed>>
+     * }
+     */
+    private function skippedTraceEntry(Rule $rule): array
+    {
+        return [
+            'rule' => $rule->name(),
+            'matched' => false,
+            'skipped' => true,
+            'skipped_reason' => 'disabled',
+            'checks' => [],
+        ];
     }
 }

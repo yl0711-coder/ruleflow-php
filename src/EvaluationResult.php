@@ -49,13 +49,21 @@ final class EvaluationResult
     }
 
     /**
-     * @return array{matched:bool,rule:?string,action:?string,reason:?string,trace:list<array<string,mixed>>}
+     * @return array{
+     *     matched:bool,
+     *     rule:?string,
+     *     matched_rules:list<string>,
+     *     action:?string,
+     *     reason:?string,
+     *     trace:list<array<string,mixed>>
+     * }
      */
     public function toArray(): array
     {
         return [
             'matched' => $this->matched,
             'rule' => $this->rule?->name(),
+            'matched_rules' => $this->rule !== null ? [$this->rule->name()] : [],
             'action' => $this->action(),
             'reason' => $this->reason(),
             'trace' => $this->trace->toArray(),

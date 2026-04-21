@@ -80,6 +80,7 @@ final class MultiEvaluationResult
      * @return array{
      *     matched:bool,
      *     rules:list<string>,
+     *     matched_rules:list<string>,
      *     actions:list<string>,
      *     reasons:list<string>,
      *     trace:list<array<string,mixed>>
@@ -90,6 +91,7 @@ final class MultiEvaluationResult
         return [
             'matched' => $this->matched(),
             'rules' => $this->ruleNames(),
+            'matched_rules' => $this->ruleNames(),
             'actions' => $this->actions(),
             'reasons' => $this->reasons(),
             'trace' => $this->trace->toArray(),
