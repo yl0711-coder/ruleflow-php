@@ -1,6 +1,8 @@
 # RuleFlow PHP
 
 [![Tests](https://github.com/yl0711-coder/ruleflow-php/actions/workflows/tests.yml/badge.svg)](https://github.com/yl0711-coder/ruleflow-php/actions/workflows/tests.yml)
+[![Packagist Version](https://img.shields.io/packagist/v/yl0711-coder/ruleflow-php.svg)](https://packagist.org/packages/yl0711-coder/ruleflow-php)
+[![License](https://img.shields.io/packagist/l/yl0711-coder/ruleflow-php.svg)](LICENSE)
 
 A lightweight, explainable rule engine for PHP and Laravel.
 
@@ -372,6 +374,14 @@ Generate coverage locally when Xdebug or PCOV is available:
 ```bash
 composer test-coverage
 ```
+
+Run the local benchmark:
+
+```bash
+php benchmarks/evaluate.php
+```
+
+See [docs/benchmark.md](docs/benchmark.md).
 
 ## Roadmap
 
