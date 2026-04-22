@@ -5,6 +5,7 @@ All notable changes to RuleFlow PHP will be documented in this file.
 ## Unreleased
 
 - No unreleased changes yet.
+- Improved README positioning and added a documentation index.
 
 ## v0.3.1 - 2026-04-22
 

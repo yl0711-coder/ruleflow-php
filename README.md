@@ -10,9 +10,9 @@ RuleFlow helps backend teams move complex business rules out of hard-coded `if/e
 
 It is designed for risk control, content moderation, marketing eligibility, access control, and business decision workflows.
 
-## Why RuleFlow?
+## Why This Project Exists
 
-Many backend systems start with simple condition checks:
+Many PHP systems start with a few inline checks:
 
 ```php
 if ($order->amount > 1000 && $user->risk_score < 60) {
@@ -20,15 +20,58 @@ if ($order->amount > 1000 && $user->risk_score < 60) {
 }
 ```
 
-As the business grows, those checks become scattered across controllers, services, jobs, and middleware. They become hard to test, hard to explain, and risky to change.
+That works until the rules become:
 
-RuleFlow provides a small and predictable way to:
+- scattered across controllers, services, jobs, and listeners
+- hard to validate before deployment
+- hard to explain to support, operations, or reviewers
+- risky to change because business logic is mixed with application flow
 
-- define business rules as structured data
-- evaluate nested request, user, order, or content context
-- return an explainable trace for every rule check
-- integrate with Laravel without forcing a heavy architecture
-- keep rule logic testable before shipping it to production
+RuleFlow keeps the model intentionally small:
+
+- rules are structured data, not framework-specific code
+- evaluation is deterministic and priority-based
+- decisions can be inspected with `trace()` or summarized with `explain()`
+- Laravel integration exists, but the core stays framework-agnostic
+
+## What You Get
+
+- First-match and all-match evaluation with `evaluate()` and `evaluateAll()`
+- Nested condition groups such as `A AND (B OR C)`
+- Built-in operators for equality, numeric checks, arrays, existence, strings, and regex
+- Rule validation before runtime
+- Trace diagnostics with failure reasons and timing
+- Compact `explain()` output for APIs, logs, and support tools
+- Sensitive-value redaction with `sensitive: true`
+- Laravel config loading, cache support, and `php artisan ruleflow:validate`
+
+## Good Fit
+
+RuleFlow is a good fit when you need:
+
+- order or payment risk decisions
+- content moderation routing
+- campaign or coupon eligibility checks
+- access-control decisions with request context
+- business rules that need to be reviewed, tested, and explained
+
+It is not trying to be:
+
+- a visual rule builder
+- a BPMN or workflow platform
+- a distributed decision service
+- a replacement for full policy, validation, or workflow systems
+
+## Project Status
+
+Current release line: `v0.3.x`
+
+The project already includes:
+
+- Packagist distribution
+- CI with PHPUnit, PHPCS, PHPStan, examples, and install validation
+- changelog and GitHub Release flow
+- production, security, and Laravel documentation
 
 ## Installation
 
@@ -42,7 +85,7 @@ composer require yl0711-coder/ruleflow-php
 
 ```bash
 composer config repositories.ruleflow vcs https://github.com/yl0711-coder/ruleflow-php
-composer require yl0711-coder/ruleflow-php:^0.2
+composer require yl0711-coder/ruleflow-php:^0.3
 ```
 
 The package requires PHP 8.1 or later.
@@ -105,6 +148,26 @@ $result = Engine::make($ruleSet)->evaluate($context);
 ```
 
 See [examples/json-loader.php](examples/json-loader.php).
+
+## Documentation
+
+Start here:
+
+- [docs/README.md](docs/README.md)
+- [docs/quickstart.md](docs/quickstart.md)
+- [docs/rule-format.md](docs/rule-format.md)
+- [docs/semantics.md](docs/semantics.md)
+
+Operational usage:
+
+- [docs/explain.md](docs/explain.md)
+- [docs/production.md](docs/production.md)
+- [docs/security-privacy.md](docs/security-privacy.md)
+
+Laravel:
+
+- [docs/laravel.md](docs/laravel.md)
+- [docs/laravel-example.md](docs/laravel-example.md)
 
 ## Trace Output
 
@@ -471,7 +534,8 @@ For production usage recommendations, see [docs/production.md](docs/production.m
 
 - v0.1: core engine, built-in operators, trace output, array/JSON loaders, custom operators, rule validation
 - v0.2: nested rule groups, evaluateAll, existence operators, built-in regex, trace improvements, Laravel cache driver, artisan validation command, PHPStan, coverage CI
-- v0.3: richer trace diagnostics, failure reasons, compact explain output, benchmark suite, production tuning guide
+- v0.3: richer trace diagnostics, failure reasons, compact explain output, benchmark suite, production and security guidance
+- v0.4: documentation polish, more production examples, API refinement, and ecosystem hardening
 - v1.0: stable rule format and semantic versioning guarantee
 
 ## License
