@@ -35,3 +35,5 @@ $result = app(\RuleFlow\RuleFlow::class)->evaluate([
 ```
 
 The facade alias can also be used when Laravel auto-discovery is enabled.
+
+For a fuller production-style example, see [laravel-example.md](laravel-example.md).

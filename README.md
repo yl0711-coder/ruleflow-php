@@ -413,6 +413,8 @@ Validate configured rules:
 php artisan ruleflow:validate
 ```
 
+See [docs/laravel.md](docs/laravel.md) and [docs/laravel-example.md](docs/laravel-example.md).
+
 ## Use Cases
 
 - Risk control: reject or review suspicious orders, users, or API requests.
