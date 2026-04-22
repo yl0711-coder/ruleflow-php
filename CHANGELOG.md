@@ -8,6 +8,7 @@ All notable changes to RuleFlow PHP will be documented in this file.
 - Clarified README positioning against heavier rule engine approaches.
 - Added a Chinese project overview and language links in the README.
 - Refreshed documentation examples and design notes to match the current feature set.
+- Added Composer metadata validation to CI and split internal engine evaluation responsibilities.
 
 ## v0.3.1 - 2026-04-22
 

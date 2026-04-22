@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Validate composer metadata
+        run: composer validate --strict
+
       - name: Run tests
         run: composer test
 
