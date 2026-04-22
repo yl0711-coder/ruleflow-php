@@ -228,7 +228,8 @@ Example output:
 `trace()` keeps the full execution detail. `explain()` keeps the decision
 summary small and stable for operational use.
 
-See [docs/explain.md](docs/explain.md) and [examples/explain.php](examples/explain.php).
+See [docs/explain.md](docs/explain.md), [docs/production.md](docs/production.md), and
+[examples/explain.php](examples/explain.php).
 
 ## Supported Operators
 
@@ -457,6 +458,8 @@ php benchmarks/evaluate.php
 ```
 
 See [docs/benchmark.md](docs/benchmark.md).
+
+For production usage recommendations, see [docs/production.md](docs/production.md).
 
 ## Roadmap
 

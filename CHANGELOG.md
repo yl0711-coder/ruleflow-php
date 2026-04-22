@@ -4,7 +4,7 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
-- No unreleased changes yet.
+- Added production usage documentation.
 
 ## v0.3.0 - 2026-04-22
 
