@@ -62,6 +62,32 @@ It is not trying to be:
 - a distributed decision service
 - a replacement for full policy, validation, or workflow systems
 
+## Why Not A Heavy Rule Engine
+
+Many teams do not need a full decision platform. They need a small library that
+can live inside an existing PHP service and solve one practical problem:
+replace scattered conditional business logic with something structured,
+testable, and explainable.
+
+RuleFlow is intentionally optimized for that use case:
+
+- no external server to run
+- no DSL or visual designer to learn
+- no database schema required
+- no framework lock-in for core usage
+- no large integration surface before the first useful rule ships
+
+Compared with heavier rule engines, RuleFlow trades breadth for clarity:
+
+- fewer concepts to learn
+- faster adoption inside an existing Laravel or PHP codebase
+- easier code review because rules stay close to application context
+- easier production debugging because `trace()` and `explain()` are built in
+
+If your problem is "we need a rules platform", RuleFlow is probably too small.
+If your problem is "our PHP business logic is turning into untestable if/else
+sprawl", RuleFlow is the right size.
+
 ## Project Status
 
 Current release line: `v0.3.x`
