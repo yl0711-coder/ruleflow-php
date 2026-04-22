@@ -11,7 +11,8 @@ final class Condition
     public function __construct(
         private readonly string $field,
         private readonly string $operator,
-        private readonly mixed $value = null
+        private readonly mixed $value = null,
+        private readonly bool $sensitive = false
     ) {
         if ($field === '') {
             throw new InvalidRuleException('Condition field cannot be empty.');
@@ -23,7 +24,7 @@ final class Condition
     }
 
     /**
-     * @param array{field:string,operator:string,value?:mixed} $definition
+     * @param array{field:string,operator:string,value?:mixed,sensitive?:bool} $definition
      */
     public static function fromArray(array $definition): self
     {
@@ -44,7 +45,8 @@ final class Condition
         return new self(
             (string) $definition['field'],
             (string) $definition['operator'],
-            $definition['value'] ?? null
+            $definition['value'] ?? null,
+            isset($definition['sensitive']) ? (bool) $definition['sensitive'] : false
         );
     }
 
@@ -63,8 +65,13 @@ final class Condition
         return $this->value;
     }
 
+    public function sensitive(): bool
+    {
+        return $this->sensitive;
+    }
+
     /**
-     * @return array{field:string,operator:string,value:mixed}
+     * @return array{field:string,operator:string,value:mixed,sensitive:bool}
      */
     public function toArray(): array
     {
@@ -72,6 +79,7 @@ final class Condition
             'field' => $this->field,
             'operator' => $this->operator,
             'value' => $this->value,
+            'sensitive' => $this->sensitive,
         ];
     }
 }

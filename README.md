@@ -168,6 +168,9 @@ infer one. Examples include `field_missing`, `type_mismatch`,
 `invalid_expected`, `value_mismatch`, `value_not_allowed`,
 `value_not_contained`, and `pattern_mismatch`.
 
+When a condition is marked with `sensitive: true`, RuleFlow redacts `actual`
+and `expected` values in trace and explain output as `[redacted]`.
+
 You can also use trace helpers for operational debugging:
 
 ```php
@@ -228,7 +231,8 @@ Example output:
 `trace()` keeps the full execution detail. `explain()` keeps the decision
 summary small and stable for operational use.
 
-See [docs/explain.md](docs/explain.md), [docs/production.md](docs/production.md), and
+See [docs/explain.md](docs/explain.md), [docs/production.md](docs/production.md),
+[docs/security-privacy.md](docs/security-privacy.md), and
 [examples/explain.php](examples/explain.php).
 
 ## Supported Operators

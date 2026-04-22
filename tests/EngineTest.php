@@ -553,4 +553,65 @@ final class EngineTest extends TestCase
             $explain['rule_explanations'][1]['failed_checks'][0]['failure_reason']
         );
     }
+
+    public function testItRedactsSensitiveValuesInTraceAndExplain(): void
+    {
+        $rules = [
+            [
+                'name' => 'sensitive_phone_check',
+                'conditions' => [
+                    [
+                        'field' => 'user.phone',
+                        'operator' => '=',
+                        'value' => '13800138000',
+                        'sensitive' => true,
+                    ],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'user' => ['phone' => '13800138000'],
+        ]);
+
+        $trace = $result->trace()->toArray();
+        $explain = $result->explain();
+
+        self::assertSame('[redacted]', $trace[0]['checks'][0]['actual']);
+        self::assertSame('[redacted]', $trace[0]['checks'][0]['expected']);
+        self::assertTrue($trace[0]['checks'][0]['sensitive']);
+        self::assertSame([], $explain['rule_explanations'][0]['failed_checks']);
+    }
+
+    public function testItRedactsSensitiveFailedValuesInExplain(): void
+    {
+        $rules = [
+            [
+                'name' => 'sensitive_phone_check',
+                'conditions' => [
+                    [
+                        'field' => 'user.phone',
+                        'operator' => '=',
+                        'value' => '13800138000',
+                        'sensitive' => true,
+                    ],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $explain = Engine::make(RuleSet::fromArray($rules))
+            ->evaluate([
+                'user' => ['phone' => '13900139000'],
+            ])
+            ->explain();
+
+        self::assertSame('[redacted]', $explain['rule_explanations'][0]['failed_checks'][0]['actual']);
+        self::assertSame('[redacted]', $explain['rule_explanations'][0]['failed_checks'][0]['expected']);
+        self::assertSame(
+            'value_mismatch',
+            $explain['rule_explanations'][0]['failed_checks'][0]['failure_reason']
+        );
+    }
 }

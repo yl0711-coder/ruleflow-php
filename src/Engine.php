@@ -10,6 +10,8 @@ use RuleFlow\Operators\OperatorRegistry;
 
 final class Engine
 {
+    private const REDACTED_VALUE = '[redacted]';
+
     public function __construct(
         private readonly RuleSet $ruleSet,
         private readonly OperatorRegistry $operators,
@@ -157,11 +159,12 @@ final class Engine
 
                 $check = [
                     'field' => $node->field(),
+                    'sensitive' => $node->sensitive(),
                     'exists' => $exists,
                     'missing' => !$exists,
-                    'actual' => $actual,
+                    'actual' => $this->traceValue($node->sensitive(), $actual),
                     'operator' => $node->operator(),
-                    'expected' => $node->value(),
+                    'expected' => $this->traceValue($node->sensitive(), $node->value()),
                     'passed' => $passed,
                     'duration_ms' => $this->durationSince($checkStartedAt),
                 ];
@@ -296,6 +299,15 @@ final class Engine
         }
 
         return null;
+    }
+
+    private function traceValue(bool $sensitive, mixed $value): mixed
+    {
+        if (!$sensitive || $value === null) {
+            return $value;
+        }
+
+        return self::REDACTED_VALUE;
     }
 
     /**

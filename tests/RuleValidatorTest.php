@@ -117,7 +117,7 @@ final class RuleValidatorTest extends TestCase
             [
                 'name' => 'missing_phone',
                 'conditions' => [
-                    ['field' => 'user.phone', 'operator' => 'not_exists'],
+                    ['field' => 'user.phone', 'operator' => 'not_exists', 'sensitive' => true],
                     ['field' => 'user.email', 'operator' => 'exists'],
                 ],
                 'action' => 'manual_review',
@@ -125,6 +125,22 @@ final class RuleValidatorTest extends TestCase
         ]);
 
         self::assertTrue($result->valid());
+    }
+
+    public function testItReportsInvalidSensitiveFlags(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'invalid_sensitive_flag',
+                'conditions' => [
+                    ['field' => 'user.phone', 'operator' => 'exists', 'sensitive' => 'yes'],
+                ],
+                'action' => 'manual_review',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains('rules[0].conditions[0].sensitive must be a boolean.', $result->errors());
     }
 
     public function testItReportsInvalidNestedConditionGroups(): void

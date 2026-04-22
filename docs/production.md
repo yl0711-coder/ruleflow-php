@@ -156,8 +156,19 @@ Before logging trace output, check whether your context contains:
 - Internal fraud or risk scores.
 - Any regulated personal data.
 
-If sensitive data may be present, avoid logging full trace output or sanitize
-the context before evaluation.
+If sensitive data may be present, mark the condition with `sensitive: true` so
+RuleFlow redacts `actual` and `expected` in trace and explain output:
+
+```php
+[
+    'field' => 'user.phone',
+    'operator' => 'exists',
+    'sensitive' => true,
+]
+```
+
+Even with redaction support, avoid logging full trace output in general-purpose
+application logs unless you have a clear debugging need.
 
 ## Performance
 

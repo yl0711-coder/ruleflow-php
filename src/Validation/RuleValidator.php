@@ -223,6 +223,10 @@ final class RuleValidator
             return;
         }
 
+        if (array_key_exists('sensitive', $condition) && !is_bool($condition['sensitive'])) {
+            $errors[] = "{$path}.sensitive must be a boolean.";
+        }
+
         if (!is_string($condition['operator']) || trim($condition['operator']) === '') {
             $errors[] = "{$path}.operator must be a non-empty string.";
             return;

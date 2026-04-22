@@ -5,6 +5,8 @@ All notable changes to RuleFlow PHP will be documented in this file.
 ## Unreleased
 
 - Added production usage documentation.
+- Added sensitive condition redaction for trace and explain output.
+- Added security and privacy documentation.
 
 ## v0.3.0 - 2026-04-22
 

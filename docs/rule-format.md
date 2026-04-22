@@ -34,6 +34,7 @@ Each condition contains:
 - `field`: dot notation path in context, for example `user.risk_score`
 - `operator`: comparison operator, for example `>` or `contains`
 - `value`: expected value
+- `sensitive`: optional boolean, redact `actual` and `expected` values in trace and explain output
 
 ## Nested Condition Groups
 

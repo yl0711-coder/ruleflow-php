@@ -128,6 +128,10 @@ When a field exists and its value is `null`:
 - `exists` is `true`
 - `missing` is `false`
 
+When a condition uses `sensitive: true`, RuleFlow still evaluates against the
+real context value, but trace and explain output redact `actual` and `expected`
+as `[redacted]`.
+
 ## Equality
 
 `=` and `!=` use strict PHP comparison semantics:
