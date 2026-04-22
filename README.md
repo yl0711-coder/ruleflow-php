@@ -1,5 +1,7 @@
 # RuleFlow PHP
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 [![Tests](https://github.com/yl0711-coder/ruleflow-php/actions/workflows/tests.yml/badge.svg)](https://github.com/yl0711-coder/ruleflow-php/actions/workflows/tests.yml)
 [![Packagist Version](https://img.shields.io/packagist/v/yl0711-coder/ruleflow-php.svg)](https://packagist.org/packages/yl0711-coder/ruleflow-php)
 [![License](https://img.shields.io/packagist/l/yl0711-coder/ruleflow-php.svg)](LICENSE)
@@ -226,6 +228,7 @@ Example output:
                     'field' => 'order.amount',
                     'exists' => true,
                     'missing' => false,
+                    'sensitive' => false,
                     'actual' => 1299,
                     'operator' => '>',
                     'expected' => 1000,
@@ -236,6 +239,7 @@ Example output:
                     'field' => 'user.risk_score',
                     'exists' => true,
                     'missing' => false,
+                    'sensitive' => false,
                     'actual' => 45,
                     'operator' => '<',
                     'expected' => 60,
@@ -326,7 +330,7 @@ See [docs/explain.md](docs/explain.md), [docs/production.md](docs/production.md)
 
 ## Supported Operators
 
-RuleFlow v0.1 supports:
+RuleFlow supports:
 
 - `=`
 - `!=`

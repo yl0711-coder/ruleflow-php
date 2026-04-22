@@ -19,9 +19,11 @@ Within one rule, conditions can use:
 - `all`: all conditions must pass
 - `any`: at least one condition must pass
 
-Future versions may add:
+Condition trees may also be nested, which allows structures such as `A AND (B OR C)`.
 
-- nested condition groups
-- Laravel cache driver integration
-- rule validation commands
-- benchmark tooling
+The current project direction is:
+
+- keep the core library framework-agnostic
+- keep the public rule format small enough to audit
+- provide Laravel integration without making Laravel part of the core design
+- prefer traceability, validation, and operational clarity over adding platform-style features

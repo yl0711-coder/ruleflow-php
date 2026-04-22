@@ -4,9 +4,10 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
-- No unreleased changes yet.
 - Improved README positioning and added a documentation index.
 - Clarified README positioning against heavier rule engine approaches.
+- Added a Chinese project overview and language links in the README.
+- Refreshed documentation examples and design notes to match the current feature set.
 
 ## v0.3.1 - 2026-04-22
 
