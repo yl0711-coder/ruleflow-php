@@ -2,6 +2,9 @@
 
 RuleFlow ships with a Laravel service provider and facade alias.
 
+Supported and tested Laravel versions are documented in
+[laravel-compatibility.md](laravel-compatibility.md).
+
 ## Publish Config
 
 ```bash

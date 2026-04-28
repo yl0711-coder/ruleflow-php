@@ -6,7 +6,7 @@
 [![Packagist Version](https://img.shields.io/packagist/v/yl0711-coder/ruleflow-php.svg)](https://packagist.org/packages/yl0711-coder/ruleflow-php)
 [![License](https://img.shields.io/packagist/l/yl0711-coder/ruleflow-php.svg)](LICENSE)
 
-一个面向 PHP 和 Laravel 的轻量、可解释规则引擎。
+一个面向 PHP 和 Laravel 的轻量 Decision List（决策列表）规则引擎。
 
 RuleFlow 用来把复杂业务规则从硬编码的 `if/else` 里抽出来，变成可测试、可配置、可追踪的规则定义。
 
@@ -31,10 +31,13 @@ if ($order->amount > 1000 && $user->risk_score < 60) {
 
 RuleFlow 有意保持模型很小：
 
+- 基于 Decision List 模型：按确定优先级执行，默认返回第一条命中决策
 - 规则是结构化数据，不是框架绑定代码
 - 按优先级做确定性评估
 - 可以用 `trace()` 看完整执行轨迹，也可以用 `explain()` 看简洁解释
 - Laravel 集成是可选能力，核心仍然保持框架无关
+
+RuleFlow 不是 RETE 推理引擎。它面向的是 PHP 业务决策：规则散落、改动不安全、线上说不清为什么命中，而不是 working-memory 推理或复杂事件处理。
 
 ## 核心能力
 
@@ -156,6 +159,7 @@ $result->trace();   // 可解释的规则执行轨迹
 起步：
 
 - [docs/README.md](docs/README.md)
+- [docs/decision-list-model.zh-CN.md](docs/decision-list-model.zh-CN.md)
 - [docs/quickstart.md](docs/quickstart.md)
 - [docs/rule-format.md](docs/rule-format.md)
 - [docs/semantics.md](docs/semantics.md)
@@ -169,6 +173,7 @@ $result->trace();   // 可解释的规则执行轨迹
 Laravel：
 
 - [docs/laravel.md](docs/laravel.md)
+- [docs/laravel-compatibility.zh-CN.md](docs/laravel-compatibility.zh-CN.md)
 - [docs/laravel-example.md](docs/laravel-example.md)
 
 ## Trace 输出

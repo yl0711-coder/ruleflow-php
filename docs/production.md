@@ -182,6 +182,12 @@ Practical guidance:
 - Use `evaluateAll()` only when collecting all matches is required.
 - Cache rule loading separately from rule evaluation.
 
+The performance profile follows the Decision List model:
+
+- `evaluate()` stops after the first match, so it is the right default for high-traffic request paths.
+- `evaluateAll()` walks every enabled rule, so reserve it for diagnostics, reports, tagging, or non-exclusive signals.
+- Full `trace()` output is useful for debugging, but `explain()` is usually better for routine logs.
+
 For local performance checks, run:
 
 ```bash

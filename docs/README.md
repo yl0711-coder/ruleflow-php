@@ -5,6 +5,7 @@ RuleFlow documentation is organized by usage stage.
 ## Start Here
 
 - [quickstart.md](quickstart.md): the smallest useful setup
+- [decision-list-model.md](decision-list-model.md): the evaluation model, trade-offs, and why RuleFlow is not a RETE engine
 - [rule-format.md](rule-format.md): rule structure and JSON format
 - [semantics.md](semantics.md): evaluation behavior and trace contract
 
@@ -18,6 +19,7 @@ RuleFlow documentation is organized by usage stage.
 ## Laravel
 
 - [laravel.md](laravel.md): package integration basics
+- [laravel-compatibility.md](laravel-compatibility.md): supported Laravel versions and integration boundaries
 - [laravel-example.md](laravel-example.md): production-style Laravel order risk example
 
 ## Advanced Usage

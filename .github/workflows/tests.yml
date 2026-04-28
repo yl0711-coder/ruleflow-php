@@ -13,7 +13,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.1', '8.2', '8.3']
+        include:
+          - php-version: '8.1'
+            testbench-version: '^8.0'
+            laravel-version: '10.x'
+          - php-version: '8.2'
+            testbench-version: '^9.0'
+            laravel-version: '11.x'
+          - php-version: '8.3'
+            testbench-version: '^10.0'
+            laravel-version: '12.x'
 
     steps:
       - name: Checkout
@@ -27,7 +36,12 @@ jobs:
           tools: composer:v2
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
+        run: |
+          composer require --dev orchestra/testbench:${{ matrix.testbench-version }} --no-update
+          composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Show Laravel compatibility target
+        run: echo "Testing Laravel ${{ matrix.laravel-version }} on PHP ${{ matrix.php-version }}"
 
       - name: Validate composer metadata
         run: composer validate --strict

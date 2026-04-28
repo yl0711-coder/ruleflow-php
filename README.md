@@ -6,7 +6,7 @@
 [![Packagist Version](https://img.shields.io/packagist/v/yl0711-coder/ruleflow-php.svg)](https://packagist.org/packages/yl0711-coder/ruleflow-php)
 [![License](https://img.shields.io/packagist/l/yl0711-coder/ruleflow-php.svg)](LICENSE)
 
-A lightweight, explainable rule engine for PHP and Laravel.
+A lightweight Decision List rule engine for PHP and Laravel.
 
 RuleFlow helps backend teams move complex business rules out of hard-coded `if/else` logic and into testable, configurable, and traceable rule definitions.
 
@@ -31,10 +31,15 @@ That works until the rules become:
 
 RuleFlow keeps the model intentionally small:
 
+- it uses a Decision List model: deterministic priority order, first matching decision by default
 - rules are structured data, not framework-specific code
 - evaluation is deterministic and priority-based
 - decisions can be inspected with `trace()` or summarized with `explain()`
 - Laravel integration exists, but the core stays framework-agnostic
+
+RuleFlow is not a RETE inference engine. It is for PHP business decisions where
+the problem is scattered rules, unsafe changes, and unclear explanations rather
+than working-memory inference or complex event processing.
 
 ## What You Get
 
@@ -182,6 +187,7 @@ See [examples/json-loader.php](examples/json-loader.php).
 Start here:
 
 - [docs/README.md](docs/README.md)
+- [docs/decision-list-model.md](docs/decision-list-model.md)
 - [docs/quickstart.md](docs/quickstart.md)
 - [docs/rule-format.md](docs/rule-format.md)
 - [docs/semantics.md](docs/semantics.md)
@@ -195,6 +201,7 @@ Operational usage:
 Laravel:
 
 - [docs/laravel.md](docs/laravel.md)
+- [docs/laravel-compatibility.md](docs/laravel-compatibility.md)
 - [docs/laravel-example.md](docs/laravel-example.md)
 
 ## Trace Output

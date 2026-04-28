@@ -4,6 +4,7 @@ RuleFlow is designed as a small library, not a platform.
 
 ## Core Principles
 
+- Use the Decision List model: deterministic priority order, first matching decision by default.
 - Rules should be data, not scattered `if/else` code.
 - Every decision should be explainable with trace output.
 - The engine should be framework-agnostic.
@@ -13,6 +14,10 @@ RuleFlow is designed as a small library, not a platform.
 ## Current Evaluation Model
 
 RuleFlow evaluates rules in priority order. The first enabled rule whose conditions match becomes the result.
+
+This is a Decision List model, not a RETE inference network. RuleFlow is designed
+for request-level PHP business decisions where determinism, validation, and
+traceability matter more than working-memory inference.
 
 Within one rule, conditions can use:
 
@@ -27,3 +32,5 @@ The current project direction is:
 - keep the public rule format small enough to audit
 - provide Laravel integration without making Laravel part of the core design
 - prefer traceability, validation, and operational clarity over adding platform-style features
+
+For details, see [decision-list-model.md](decision-list-model.md).
