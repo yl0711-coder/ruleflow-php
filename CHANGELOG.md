@@ -4,11 +4,17 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
+## v0.3.2 - 2026-04-29
+
 - Improved README positioning and added a documentation index.
 - Clarified README positioning against heavier rule engine approaches.
 - Added a Chinese project overview and language links in the README.
 - Refreshed documentation examples and design notes to match the current feature set.
 - Added Composer metadata validation to CI and split internal engine evaluation responsibilities.
+- Added Decision List model documentation and Laravel compatibility notes.
+- Added real Laravel installation smoke-test documentation in English and Chinese.
+- Added a Chinese Laravel order risk example.
+- Fixed example rule naming so the phone existence example matches its behavior.
 
 ## v0.3.1 - 2026-04-22
 
