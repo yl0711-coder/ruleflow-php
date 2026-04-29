@@ -174,7 +174,8 @@ Laravel：
 
 - [docs/laravel.md](docs/laravel.md)
 - [docs/laravel-compatibility.zh-CN.md](docs/laravel-compatibility.zh-CN.md)
-- [docs/laravel-example.md](docs/laravel-example.md)
+- [docs/laravel-installation.zh-CN.md](docs/laravel-installation.zh-CN.md)
+- [docs/laravel-example.zh-CN.md](docs/laravel-example.zh-CN.md)
 
 ## Trace 输出
 
@@ -269,13 +270,13 @@ $explain = $result->explain();
     'summary' => [
         'evaluated_rules' => 1,
         'matched_rules' => [],
-        'failed_rules' => ['missing_phone'],
+        'failed_rules' => ['phone_present'],
         'skipped_rules' => [],
         'duration_ms' => 0.031,
     ],
     'rule_explanations' => [
         [
-            'rule' => 'missing_phone',
+            'rule' => 'phone_present',
             'matched' => false,
             'skipped' => false,
             'failure_reason' => 'field_missing',
@@ -480,7 +481,9 @@ $result = app(\RuleFlow\RuleFlow::class)->evaluate($context);
 php artisan ruleflow:validate
 ```
 
-见 [docs/laravel.md](docs/laravel.md) 和 [docs/laravel-example.md](docs/laravel-example.md)。
+见 [docs/laravel.md](docs/laravel.md)、
+[docs/laravel-installation.zh-CN.md](docs/laravel-installation.zh-CN.md) 和
+[docs/laravel-example.zh-CN.md](docs/laravel-example.zh-CN.md)。
 
 ## 使用场景
 

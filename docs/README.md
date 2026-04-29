@@ -20,7 +20,9 @@ RuleFlow documentation is organized by usage stage.
 
 - [laravel.md](laravel.md): package integration basics
 - [laravel-compatibility.md](laravel-compatibility.md): supported Laravel versions and integration boundaries
+- [laravel-installation.md](laravel-installation.md): real Laravel project installation and smoke test checklist
 - [laravel-example.md](laravel-example.md): production-style Laravel order risk example
+- [laravel-example.zh-CN.md](laravel-example.zh-CN.md): Chinese version of the Laravel order risk example
 
 ## Advanced Usage
 

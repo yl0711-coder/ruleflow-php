@@ -21,13 +21,13 @@ $rules = [
         'reason' => 'High-risk order requires manual review.',
     ],
     [
-        'name' => 'missing_phone',
+        'name' => 'phone_present',
         'priority' => 80,
         'conditions' => [
             ['field' => 'user.phone', 'operator' => 'exists'],
         ],
-        'action' => 'manual_review',
-        'reason' => 'User phone number is required for this flow.',
+        'action' => 'allow',
+        'reason' => 'User phone number is present.',
     ],
 ];
 

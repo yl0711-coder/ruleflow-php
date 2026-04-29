@@ -1,6 +1,6 @@
 {
     "name": "yl0711-coder/ruleflow-php",
-    "description": "A lightweight, explainable rule engine for PHP and Laravel.",
+    "description": "A lightweight Decision List rule engine for PHP and Laravel.",
     "type": "library",
     "license": "MIT",
     "keywords": [

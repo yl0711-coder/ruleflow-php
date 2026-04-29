@@ -1,25 +1,24 @@
-# Laravel Example
+# Laravel 风控示例
 
-This document shows a realistic Laravel integration example for RuleFlow using
-an order risk review flow.
+这份文档展示 RuleFlow 在 Laravel 项目里的一个真实风控接入方式：订单风险复核。
 
-The goal is simple:
+目标很明确：
 
-- Keep risk rules in `config/ruleflow.php`.
-- Validate those rules before deployment.
-- Evaluate an order request inside a controller or service.
-- Return a compact `explain()` payload to internal systems.
-- Use Redis-backed cache when rule loading is repeated across instances.
+- 把风险规则放在 `config/ruleflow.php`。
+- 发布前校验规则。
+- 在 controller 或 service 中执行订单决策。
+- 给内部系统返回简洁的 `explain()` 决策说明。
+- 规则加载频繁时使用 Redis-backed cache。
 
-## 1. Publish The Config
+## 1. 发布配置
 
 ```bash
 php artisan vendor:publish --tag=ruleflow-config
 ```
 
-## 2. Define Risk Rules
+## 2. 定义风控规则
 
-Example `config/ruleflow.php`:
+示例 `config/ruleflow.php`：
 
 ```php
 <?php
@@ -77,15 +76,15 @@ return [
 ];
 ```
 
-## 3. Validate Rules In CI Or Deployment
+## 3. 在 CI 或部署流程中校验
 
-Run rule validation before the application is released:
+应用发布前执行：
 
 ```bash
 php artisan ruleflow:validate
 ```
 
-Recommended deployment quality checks:
+推荐部署检查：
 
 ```bash
 composer test
@@ -94,11 +93,11 @@ composer analyse
 php artisan ruleflow:validate
 ```
 
-If `ruleflow:validate` fails, stop the deployment.
+如果 `ruleflow:validate` 失败，应该阻断部署。
 
-## 4. Evaluate Inside A Controller
+## 4. 在 Controller 中执行
 
-Example controller:
+示例 controller：
 
 ```php
 <?php
@@ -130,24 +129,17 @@ final class OrderRiskController
 
         $result = $ruleFlow->evaluate($context);
 
-        if (!$result->matched()) {
-            return response()->json([
-                'decision' => 'allow',
-                'ruleflow' => $result->explain(),
-            ]);
-        }
-
         return response()->json([
-            'decision' => $result->action(),
+            'decision' => $result->action() ?? 'allow',
             'ruleflow' => $result->explain(),
         ]);
     }
 }
 ```
 
-## 5. Log Explain Output
+## 5. 日志里优先使用 explain
 
-For normal application logs, prefer `explain()`:
+日常应用日志建议记录 `explain()`：
 
 ```php
 $logger->info('Order risk decision evaluated.', [
@@ -156,14 +148,14 @@ $logger->info('Order risk decision evaluated.', [
 ]);
 ```
 
-This keeps logs compact and avoids exposing the full trace payload.
+这样日志更紧凑，也不会暴露完整 trace。
 
-Because the `user.phone` condition is marked `sensitive: true`, the output
-redacts `actual` and `expected` values as `[redacted]`.
+如果条件标记了 `sensitive: true`，RuleFlow 会把 trace 和 explain 中的
+`actual`、`expected` 脱敏成 `[redacted]`。
 
-## 6. Debug With Trace Only When Needed
+## 6. 只在排障时使用 trace
 
-When support or engineering needs deeper diagnostics:
+支持或研发需要更细诊断时，再记录完整 trace：
 
 ```php
 $logger->debug('Order risk trace.', [
@@ -172,58 +164,11 @@ $logger->debug('Order risk trace.', [
 ]);
 ```
 
-Use this only in controlled internal environments.
+这类日志只适合受控的内部环境。
 
-## 7. Example Decision Output
+## 7. Service 层写法
 
-Example `explain()` response for an internal API:
-
-```php
-[
-    'matched' => true,
-    'rule' => 'missing_phone_for_high_amount',
-    'matched_rules' => ['missing_phone_for_high_amount'],
-    'action' => 'manual_review',
-    'reason' => 'High amount order requires a phone number.',
-    'failure_reason' => null,
-    'summary' => [
-        'evaluated_rules' => 2,
-        'matched_rules' => ['missing_phone_for_high_amount'],
-        'failed_rules' => ['high_amount_high_risk_user'],
-        'skipped_rules' => [],
-        'duration_ms' => 0.091,
-    ],
-    'rule_explanations' => [
-        [
-            'rule' => 'high_amount_high_risk_user',
-            'matched' => false,
-            'skipped' => false,
-            'failure_reason' => 'value_mismatch',
-            'failed_checks' => [
-                [
-                    'field' => 'user.risk_score',
-                    'operator' => '<',
-                    'expected' => 60,
-                    'actual' => 72,
-                    'failure_reason' => 'value_mismatch',
-                ],
-            ],
-        ],
-        [
-            'rule' => 'missing_phone_for_high_amount',
-            'matched' => true,
-            'skipped' => false,
-            'failure_reason' => null,
-            'failed_checks' => [],
-        ],
-    ],
-]
-```
-
-## 8. Service Layer Variant
-
-If you do not want controllers to know RuleFlow details, move the evaluation
-into an application service:
+如果不希望 controller 知道 RuleFlow 细节，可以把决策逻辑放到应用服务里：
 
 ```php
 <?php
@@ -251,19 +196,20 @@ final class OrderRiskService
 }
 ```
 
-This is usually the better choice when:
+这种方式更适合：
 
-- Multiple controllers need the same decision.
-- You want dedicated unit tests around context mapping.
-- The application has a service-oriented architecture.
+- 多个 controller 复用同一套决策。
+- 希望单独测试 context 映射。
+- 项目本身有清晰的 service 分层。
 
-## Recommended Pattern
+## 推荐模式
 
-For a production Laravel backend, a good default is:
+Laravel 企业后端里，比较稳妥的默认方案是：
 
-- Store rules in `config/ruleflow.php`.
-- Use Redis-backed cache for repeated rule loading.
-- Run `php artisan ruleflow:validate` in CI and deployment.
-- Return `explain()` to internal callers.
-- Log `explain()` by default and `trace()` only for targeted debugging.
-- Mark sensitive conditions with `sensitive: true`.
+- 规则放在 `config/ruleflow.php`。
+- 规则加载频繁时启用 Redis-backed cache。
+- CI 和部署流程里运行 `php artisan ruleflow:validate`。
+- 给内部调用方返回 `explain()`。
+- 默认日志记录 `explain()`，只在定向排障时记录 `trace()`。
+- 敏感字段条件加 `sensitive: true`。
+

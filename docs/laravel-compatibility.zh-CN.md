@@ -35,6 +35,9 @@ php artisan vendor:publish --tag=ruleflow-config
 php artisan ruleflow:validate
 ```
 
+完整的空 Laravel 项目验证流程见
+[laravel-installation.zh-CN.md](laravel-installation.zh-CN.md)。
+
 ## Laravel 集成提供什么
 
 - 自动发现 service provider。
@@ -55,4 +58,3 @@ RuleFlow 不替代：
 - 完整规则管理后台。
 
 输入正确性仍然应该使用 Laravel validation。授权仍然应该使用 policies 和 gates。RuleFlow 适合需要结构化、可审查、可解释的业务决策。
-

@@ -36,6 +36,9 @@ php artisan vendor:publish --tag=ruleflow-config
 php artisan ruleflow:validate
 ```
 
+For a full clean-project verification flow, see
+[laravel-installation.md](laravel-installation.md).
+
 ## What The Laravel Integration Provides
 
 - Auto-discovered service provider.
@@ -58,4 +61,3 @@ RuleFlow is not a replacement for:
 Use Laravel validation for input correctness. Use policies and gates for
 authorization. Use RuleFlow when business decisions need to be structured,
 reviewable, and explainable.
-

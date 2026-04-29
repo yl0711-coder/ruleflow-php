@@ -202,6 +202,7 @@ Laravel:
 
 - [docs/laravel.md](docs/laravel.md)
 - [docs/laravel-compatibility.md](docs/laravel-compatibility.md)
+- [docs/laravel-installation.md](docs/laravel-installation.md)
 - [docs/laravel-example.md](docs/laravel-example.md)
 
 ## Trace Output
@@ -304,13 +305,13 @@ Example output:
     'summary' => [
         'evaluated_rules' => 1,
         'matched_rules' => [],
-        'failed_rules' => ['missing_phone'],
+        'failed_rules' => ['phone_present'],
         'skipped_rules' => [],
         'duration_ms' => 0.031,
     ],
     'rule_explanations' => [
         [
-            'rule' => 'missing_phone',
+            'rule' => 'phone_present',
             'matched' => false,
             'skipped' => false,
             'failure_reason' => 'field_missing',
@@ -513,7 +514,9 @@ Validate configured rules:
 php artisan ruleflow:validate
 ```
 
-See [docs/laravel.md](docs/laravel.md) and [docs/laravel-example.md](docs/laravel-example.md).
+See [docs/laravel.md](docs/laravel.md),
+[docs/laravel-installation.md](docs/laravel-installation.md), and
+[docs/laravel-example.md](docs/laravel-example.md).
 
 ## Use Cases
 

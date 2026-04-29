@@ -25,13 +25,13 @@ $rules = [
         'reason' => 'High-risk order requires manual review.',
     ],
     [
-        'name' => 'missing_phone',
+        'name' => 'phone_present',
         'priority' => 80,
         'conditions' => [
             ['field' => 'user.phone', 'operator' => 'exists'],
         ],
-        'action' => 'manual_review',
-        'reason' => 'User phone number is required for this flow.',
+        'action' => 'allow',
+        'reason' => 'User phone number is present.',
     ],
 ];
 
@@ -54,7 +54,7 @@ print_r($result->explain());
 In this example:
 
 - `high_risk_order` fails because `user.risk_score` is not below `60`.
-- `missing_phone` fails because `user.phone` is missing.
+- `phone_present` fails because `user.phone` is missing.
 - No rule matches, but the output explains why each rule failed.
 
 ## Output Shape
@@ -72,7 +72,7 @@ In this example:
     'summary' => [
         'evaluated_rules' => 2,
         'matched_rules' => [],
-        'failed_rules' => ['high_risk_order', 'missing_phone'],
+        'failed_rules' => ['high_risk_order', 'phone_present'],
         'skipped_rules' => [],
         'duration_ms' => 0.062,
     ],
@@ -93,7 +93,7 @@ In this example:
             ],
         ],
         [
-            'rule' => 'missing_phone',
+            'rule' => 'phone_present',
             'matched' => false,
             'skipped' => false,
             'failure_reason' => 'field_missing',
