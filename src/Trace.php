@@ -116,17 +116,15 @@ final class Trace
      */
     public function explainEntries(): array
     {
-        return array_values(
-            array_map(
-                fn (array $entry): array => [
-                    'rule' => (string) $entry['rule'],
-                    'matched' => (bool) $entry['matched'],
-                    'skipped' => ($entry['skipped'] ?? false) === true,
-                    'failure_reason' => $this->stringOrNull($entry['failure_reason'] ?? null),
-                    'failed_checks' => $this->failedChecks($entry['checks']),
-                ],
-                $this->entries
-            )
+        return array_map(
+            fn (array $entry): array => [
+                'rule' => (string) $entry['rule'],
+                'matched' => (bool) $entry['matched'],
+                'skipped' => ($entry['skipped'] ?? false) === true,
+                'failure_reason' => $this->stringOrNull($entry['failure_reason'] ?? null),
+                'failed_checks' => $this->failedChecks($entry['checks']),
+            ],
+            $this->entries
         );
     }
 
@@ -137,9 +135,7 @@ final class Trace
         foreach ($this->entries as $entry) {
             $entryDuration = $entry['duration_ms'] ?? 0.0;
 
-            if (is_float($entryDuration)) {
-                $duration += $entryDuration;
-            }
+            $duration += $entryDuration;
         }
 
         return round($duration, 3);
@@ -159,11 +155,9 @@ final class Trace
      */
     private function ruleNames(array $entries): array
     {
-        return array_values(
-            array_map(
-                static fn (array $entry): string => (string) $entry['rule'],
-                $entries
-            )
+        return array_map(
+            static fn (array $entry): string => (string) $entry['rule'],
+            $entries
         );
     }
 

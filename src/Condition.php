@@ -24,7 +24,7 @@ final class Condition
     }
 
     /**
-     * @param array{field:string,operator:string,value?:mixed,sensitive?:bool} $definition
+     * @param array<string,mixed> $definition
      */
     public static function fromArray(array $definition): self
     {
@@ -43,8 +43,8 @@ final class Condition
         }
 
         return new self(
-            (string) $definition['field'],
-            (string) $definition['operator'],
+            $definition['field'],
+            $definition['operator'],
             $definition['value'] ?? null,
             isset($definition['sensitive']) ? (bool) $definition['sensitive'] : false
         );

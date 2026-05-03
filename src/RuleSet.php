@@ -16,7 +16,7 @@ final class RuleSet
     }
 
     /**
-     * @param list<array<string,mixed>> $definitions
+     * @param list<mixed> $definitions
      */
     public static function fromArray(array $definitions): self
     {

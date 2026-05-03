@@ -22,7 +22,7 @@ final class RuleValidator
     }
 
     /**
-     * @param list<array<string,mixed>> $definitions
+     * @param list<mixed> $definitions
      */
     public function validate(array $definitions): ValidationResult
     {
@@ -48,7 +48,7 @@ final class RuleValidator
     }
 
     /**
-     * @param list<array<string,mixed>> $definitions
+     * @param list<mixed> $definitions
      */
     public function assertValid(array $definitions): void
     {
