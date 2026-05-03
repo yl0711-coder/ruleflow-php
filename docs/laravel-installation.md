@@ -6,6 +6,18 @@ the Testbench-based compatibility tests in CI.
 Use this checklist when preparing a release or validating the package in a new
 Laravel project.
 
+If you want a repeatable local check, use the included smoke-test script:
+
+```bash
+PHP_BIN=/Applications/XAMPP/xamppfiles/bin/php \
+COMPOSER_BIN=composer \
+bash scripts/smoke-laravel.sh
+```
+
+The script creates a temporary Laravel project under `/tmp`, installs RuleFlow
+from the current local repository, publishes the config, validates a minimal
+rule set, and runs one container-based evaluation through Laravel.
+
 ## Supported Targets
 
 RuleFlow is tested with:
@@ -137,3 +149,18 @@ Before publishing a RuleFlow release, verify:
 - A simple `app(\RuleFlow\RuleFlow::class)->evaluate()` call works.
 - The README and Laravel compatibility docs match the tested versions.
 
+## CI Versus Real Laravel Smoke Test
+
+The GitHub Actions matrix uses Orchestra Testbench to verify Laravel package
+integration across supported Laravel versions. That is fast and reliable for
+service provider, facade, config, cache, and command behavior.
+
+The clean-project smoke test verifies a different path:
+
+- Composer can install the package into a real Laravel skeleton.
+- Laravel package auto-discovery works outside Testbench.
+- Config publishing works in a normal application.
+- `php artisan ruleflow:validate` works from a normal Laravel CLI.
+- A container-resolved `RuleFlow\RuleFlow` instance can evaluate a real context.
+
+Use both checks before important releases.

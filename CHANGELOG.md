@@ -4,6 +4,9 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
+- Added a real Laravel clean-project smoke-test script for checking package discovery, config publishing, rule validation, and container evaluation.
+- Documented how the Laravel smoke test complements the existing Testbench-based CI checks.
+
 ## v0.3.2 - 2026-04-29
 
 - Improved README positioning and added a documentation index.

@@ -5,6 +5,16 @@ Testbench 的兼容性测试。
 
 发布版本前，或者在新的 Laravel 项目里接入 RuleFlow 前，可以按这份清单验证。
 
+如果需要可重复执行的本地检查，可以使用项目里的 smoke-test 脚本：
+
+```bash
+PHP_BIN=/Applications/XAMPP/xamppfiles/bin/php \
+COMPOSER_BIN=composer \
+bash scripts/smoke-laravel.sh
+```
+
+这个脚本会在 `/tmp` 下创建临时 Laravel 项目，从当前本地仓库安装 RuleFlow，发布配置，写入一组最小规则，执行规则校验，并通过 Laravel 容器完成一次真实规则执行。
+
 ## 支持目标
 
 RuleFlow 当前测试：
@@ -135,3 +145,16 @@ php artisan tinker
 - `app(\RuleFlow\RuleFlow::class)->evaluate()` 可以执行规则。
 - README 和 Laravel 兼容性文档里的版本说明与测试矩阵一致。
 
+## CI 与真实 Laravel 冒烟测试的区别
+
+GitHub Actions 里的 Laravel 矩阵使用 Orchestra Testbench 验证 Laravel package 集成。它适合快速验证 service provider、facade、config、cache、artisan command 等行为。
+
+真实 Laravel 空项目冒烟测试验证的是另一条路径：
+
+- Composer 能把包安装到真实 Laravel 骨架项目中。
+- Laravel package auto-discovery 在 Testbench 之外也正常。
+- 配置发布在普通应用里可用。
+- `php artisan ruleflow:validate` 能从普通 Laravel CLI 执行。
+- 通过 Laravel 容器解析出的 `RuleFlow\RuleFlow` 可以执行真实上下文。
+
+重要版本发布前，建议两类检查都做。
