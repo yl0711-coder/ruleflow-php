@@ -143,6 +143,51 @@ final class RuleValidatorTest extends TestCase
         self::assertContains('rules[0].conditions[0].sensitive must be a boolean.', $result->errors());
     }
 
+    public function testItValidatesRuleMetadata(): void
+    {
+        $valid = RuleValidator::defaults()->validate([
+            [
+                'name' => 'campaign_eligibility',
+                'conditions' => [
+                    ['field' => 'user.segment', 'operator' => '=', 'value' => 'vip'],
+                ],
+                'action' => 'allow_campaign',
+                'metadata' => [
+                    'owner' => 'growth',
+                    'version' => '2026-05',
+                ],
+            ],
+        ]);
+
+        $invalidType = RuleValidator::defaults()->validate([
+            [
+                'name' => 'invalid_metadata',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => 'exists'],
+                ],
+                'action' => 'allow',
+                'metadata' => 'growth',
+            ],
+        ]);
+
+        $invalidKeys = RuleValidator::defaults()->validate([
+            [
+                'name' => 'invalid_metadata_keys',
+                'conditions' => [
+                    ['field' => 'user.id', 'operator' => 'exists'],
+                ],
+                'action' => 'allow',
+                'metadata' => ['growth'],
+            ],
+        ]);
+
+        self::assertTrue($valid->valid());
+        self::assertFalse($invalidType->valid());
+        self::assertFalse($invalidKeys->valid());
+        self::assertContains('rules[0].metadata must be an object.', $invalidType->errors());
+        self::assertContains('rules[0].metadata keys must be strings.', $invalidKeys->errors());
+    }
+
     public function testItReportsInvalidNestedConditionGroups(): void
     {
         $result = RuleValidator::defaults()->validate([

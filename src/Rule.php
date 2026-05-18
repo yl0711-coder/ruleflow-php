@@ -13,6 +13,7 @@ final class Rule
 
     /**
      * @param list<Condition|ConditionGroup> $conditions
+     * @param array<string,mixed> $metadata
      */
     public function __construct(
         private readonly string $name,
@@ -21,7 +22,8 @@ final class Rule
         private readonly ?string $reason = null,
         private readonly int $priority = 0,
         private readonly bool $enabled = true,
-        private readonly string $match = self::MATCH_ALL
+        private readonly string $match = self::MATCH_ALL,
+        private readonly array $metadata = []
     ) {
         if ($name === '') {
             throw new InvalidRuleException('Rule name cannot be empty.');
@@ -78,6 +80,23 @@ final class Rule
             throw new InvalidRuleException("Rule [{$definition['name']}] match must be a string.");
         }
 
+        if (
+            array_key_exists('metadata', $definition)
+            && !is_array($definition['metadata'])
+        ) {
+            throw new InvalidRuleException("Rule [{$definition['name']}] metadata must be an object.");
+        }
+
+        if (isset($definition['metadata'])) {
+            foreach (array_keys($definition['metadata']) as $key) {
+                if (!is_string($key)) {
+                    throw new InvalidRuleException(
+                        "Rule [{$definition['name']}] metadata keys must be strings."
+                    );
+                }
+            }
+        }
+
         $conditions = [];
 
         foreach ($definition['conditions'] as $index => $condition) {
@@ -95,7 +114,8 @@ final class Rule
             isset($definition['reason']) ? (string) $definition['reason'] : null,
             isset($definition['priority']) ? (int) $definition['priority'] : 0,
             isset($definition['enabled']) ? (bool) $definition['enabled'] : true,
-            isset($definition['match']) ? (string) $definition['match'] : self::MATCH_ALL
+            isset($definition['match']) ? (string) $definition['match'] : self::MATCH_ALL,
+            isset($definition['metadata']) ? $definition['metadata'] : []
         );
     }
 
@@ -135,6 +155,14 @@ final class Rule
     public function match(): string
     {
         return $this->match;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function metadata(): array
+    {
+        return $this->metadata;
     }
 
     public function matchesAllConditions(): bool

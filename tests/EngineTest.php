@@ -554,6 +554,63 @@ final class EngineTest extends TestCase
         );
     }
 
+    public function testItExposesRuleMetadataForMatchedRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'campaign_eligibility',
+                'conditions' => [
+                    ['field' => 'user.segment', 'operator' => '=', 'value' => 'vip'],
+                ],
+                'action' => 'allow_campaign',
+                'metadata' => [
+                    'owner' => 'growth',
+                    'version' => '2026-05',
+                    'ticket' => 'OPS-1288',
+                ],
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluate([
+            'user' => ['segment' => 'vip'],
+        ]);
+
+        self::assertSame('growth', $result->metadata()['owner']);
+        self::assertSame('2026-05', $result->toArray()['metadata']['version']);
+        self::assertSame('OPS-1288', $result->explain()['metadata']['ticket']);
+    }
+
+    public function testItExposesMetadataByRuleForAllMatchedRules(): void
+    {
+        $rules = [
+            [
+                'name' => 'amount_review',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'manual_review',
+                'metadata' => ['owner' => 'risk'],
+            ],
+            [
+                'name' => 'country_review',
+                'conditions' => [
+                    ['field' => 'user.country', 'operator' => 'in', 'value' => ['CN', 'SG']],
+                ],
+                'action' => 'review',
+                'metadata' => ['owner' => 'compliance'],
+            ],
+        ];
+
+        $result = Engine::make(RuleSet::fromArray($rules))->evaluateAll([
+            'order' => ['amount' => 1299],
+            'user' => ['country' => 'CN'],
+        ]);
+
+        self::assertSame('risk', $result->metadata()['amount_review']['owner']);
+        self::assertSame('compliance', $result->toArray()['metadata']['country_review']['owner']);
+        self::assertSame('risk', $result->explain()['metadata']['amount_review']['owner']);
+    }
+
     public function testItRedactsSensitiveValuesInTraceAndExplain(): void
     {
         $rules = [

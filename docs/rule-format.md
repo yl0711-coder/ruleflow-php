@@ -9,6 +9,7 @@ A RuleFlow rule contains:
 - `conditions`: one or more conditions
 - `action`: decision returned when all conditions pass
 - `reason`: optional human-readable explanation
+- `metadata`: optional object for operational ownership and audit context
 
 ## Example
 
@@ -23,7 +24,12 @@ A RuleFlow rule contains:
     {"field": "user.risk_score", "operator": "<", "value": 60}
   ],
   "action": "reject",
-  "reason": "High-risk order requires manual review."
+  "reason": "High-risk order requires manual review.",
+  "metadata": {
+    "owner": "risk",
+    "version": "2026-05",
+    "ticket": "RISK-1842"
+  }
 }
 ```
 
@@ -85,6 +91,47 @@ Use `any` for moderation or risk rules where several independent signals can tri
   ],
   "action": "manual_review"
 }
+```
+
+## Rule Metadata
+
+`metadata` is optional and does not affect evaluation. Use it for information
+that helps engineers and operations teams understand where a rule came from and
+how it should be maintained.
+
+Good metadata fields include:
+
+- `owner`: team or service responsible for the rule
+- `version`: business rule version or release window
+- `ticket`: issue, change request, or approval reference
+- `rollout`: rollout stage such as `shadow`, `canary`, or `production`
+
+Example:
+
+```json
+{
+  "name": "vip_campaign_eligibility",
+  "conditions": [
+    {"field": "user.segment", "operator": "=", "value": "vip"}
+  ],
+  "action": "allow_campaign",
+  "metadata": {
+    "owner": "growth",
+    "version": "2026-05",
+    "ticket": "OPS-1288",
+    "rollout": "production"
+  }
+}
+```
+
+Matched rule metadata is available through `metadata()`, `toArray()`, and
+`explain()`:
+
+```php
+$result = Engine::make($ruleSet)->evaluate($context);
+
+$result->metadata(); // ['owner' => 'growth', ...]
+$result->explain()['metadata'];
 ```
 
 ## JSON Files

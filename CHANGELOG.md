@@ -4,6 +4,10 @@ All notable changes to RuleFlow PHP will be documented in this file.
 
 ## Unreleased
 
+- Added optional rule `metadata` for ownership, version, ticket, and rollout context.
+- Exposed matched rule metadata through `metadata()`, `toArray()`, and `explain()` results.
+- Documented production guidance for rule ownership metadata.
+
 ## v0.3.3 - 2026-05-03
 
 - Added a real Laravel clean-project smoke-test script for checking package discovery, config publishing, rule validation, and container evaluation.

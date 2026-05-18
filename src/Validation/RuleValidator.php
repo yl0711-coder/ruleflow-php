@@ -41,6 +41,7 @@ final class RuleValidator
             $this->validateRuleName($definition, $path, $names, $errors);
             $this->validateAction($definition, $path, $errors);
             $this->validateMatchMode($definition, $path, $errors);
+            $this->validateMetadata($definition, $path, $errors);
             $this->validateConditions($definition, $path, $errors);
         }
 
@@ -123,6 +124,29 @@ final class RuleValidator
 
         if (!is_string($definition['action']) || trim($definition['action']) === '') {
             $errors[] = "{$path}.action must be a non-empty string.";
+        }
+    }
+
+    /**
+     * @param array<string,mixed> $definition
+     * @param list<string> $errors
+     */
+    private function validateMetadata(array $definition, string $path, array &$errors): void
+    {
+        if (!array_key_exists('metadata', $definition)) {
+            return;
+        }
+
+        if (!is_array($definition['metadata'])) {
+            $errors[] = "{$path}.metadata must be an object.";
+            return;
+        }
+
+        foreach (array_keys($definition['metadata']) as $key) {
+            if (!is_string($key)) {
+                $errors[] = "{$path}.metadata keys must be strings.";
+                return;
+            }
         }
     }
 

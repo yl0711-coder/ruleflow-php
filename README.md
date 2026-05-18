@@ -50,6 +50,7 @@ than working-memory inference or complex event processing.
 - Trace diagnostics with failure reasons and timing
 - Compact `explain()` output for APIs, logs, and support tools
 - Sensitive-value redaction with `sensitive: true`
+- Optional rule metadata for ownership, versions, tickets, and rollout notes
 - Laravel config loading, cache support, and `php artisan ruleflow:validate`
 
 ## Good Fit

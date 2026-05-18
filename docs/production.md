@@ -83,6 +83,40 @@ If rules are stored outside version control, keep a separate audit trail for:
 - Why it changed.
 - Which deployment or validation process approved it.
 
+## Rule Ownership Metadata
+
+Use rule `metadata` to keep lightweight ownership and rollout context close to
+the rule definition:
+
+```php
+[
+    'name' => 'vip_campaign_eligibility',
+    'conditions' => [
+        ['field' => 'user.segment', 'operator' => '=', 'value' => 'vip'],
+    ],
+    'action' => 'allow_campaign',
+    'metadata' => [
+        'owner' => 'growth',
+        'version' => '2026-05',
+        'ticket' => 'OPS-1288',
+        'rollout' => 'production',
+    ],
+]
+```
+
+This is useful when rule decisions are reviewed in logs, support tools, or
+internal dashboards:
+
+```php
+$logger->info('Rule decision evaluated.', [
+    'ruleflow' => $result->explain(),
+    'rule_metadata' => $result->metadata(),
+]);
+```
+
+Keep metadata operational and non-sensitive. Do not put user identifiers, phone
+numbers, access tokens, or private business thresholds in metadata.
+
 ## Validation
 
 Validate rules before deployment:

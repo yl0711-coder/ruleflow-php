@@ -48,6 +48,7 @@ RuleFlow 不是 RETE 推理引擎。它面向的是 PHP 业务决策：规则散
 - 带失败原因和耗时的 trace 诊断
 - 面向 API、日志、支持工具的 `explain()` 简洁输出
 - `sensitive: true` 敏感值脱敏
+- 可选规则 metadata，用于记录负责人、版本、工单和灰度说明
 - Laravel 配置加载、缓存支持、`php artisan ruleflow:validate`
 
 ## 适合什么场景

@@ -43,6 +43,14 @@ final class EvaluationResult
         return $this->rule?->reason();
     }
 
+    /**
+     * @return array<string,mixed>
+     */
+    public function metadata(): array
+    {
+        return $this->rule?->metadata() ?? [];
+    }
+
     public function trace(): Trace
     {
         return $this->trace;
@@ -55,6 +63,7 @@ final class EvaluationResult
      *     matched_rules:list<string>,
      *     action:?string,
      *     reason:?string,
+     *     metadata:array<string,mixed>,
      *     failure_reason:?string,
      *     summary:array{
      *         evaluated_rules:int,
@@ -74,6 +83,7 @@ final class EvaluationResult
             'matched_rules' => $this->rule !== null ? [$this->rule->name()] : [],
             'action' => $this->action(),
             'reason' => $this->reason(),
+            'metadata' => $this->metadata(),
             'failure_reason' => $this->failureReason(),
             'summary' => $this->trace->summary(),
             'rule_explanations' => $this->trace->explainEntries(),
@@ -87,6 +97,7 @@ final class EvaluationResult
      *     matched_rules:list<string>,
      *     action:?string,
      *     reason:?string,
+     *     metadata:array<string,mixed>,
      *     trace:list<array<string,mixed>>
      * }
      */
@@ -98,6 +109,7 @@ final class EvaluationResult
             'matched_rules' => $this->rule !== null ? [$this->rule->name()] : [],
             'action' => $this->action(),
             'reason' => $this->reason(),
+            'metadata' => $this->metadata(),
             'trace' => $this->trace->toArray(),
         ];
     }

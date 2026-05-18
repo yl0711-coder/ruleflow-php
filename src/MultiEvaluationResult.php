@@ -71,6 +71,20 @@ final class MultiEvaluationResult
         );
     }
 
+    /**
+     * @return array<string,array<string,mixed>>
+     */
+    public function metadata(): array
+    {
+        $metadata = [];
+
+        foreach ($this->rules as $rule) {
+            $metadata[$rule->name()] = $rule->metadata();
+        }
+
+        return $metadata;
+    }
+
     public function trace(): Trace
     {
         return $this->trace;
@@ -83,6 +97,7 @@ final class MultiEvaluationResult
      *     matched_rules:list<string>,
      *     actions:list<string>,
      *     reasons:list<string>,
+     *     metadata:array<string,array<string,mixed>>,
      *     failure_reason:?string,
      *     summary:array{
      *         evaluated_rules:int,
@@ -102,6 +117,7 @@ final class MultiEvaluationResult
             'matched_rules' => $this->ruleNames(),
             'actions' => $this->actions(),
             'reasons' => $this->reasons(),
+            'metadata' => $this->metadata(),
             'failure_reason' => $this->failureReason(),
             'summary' => $this->trace->summary(),
             'rule_explanations' => $this->trace->explainEntries(),
@@ -115,6 +131,7 @@ final class MultiEvaluationResult
      *     matched_rules:list<string>,
      *     actions:list<string>,
      *     reasons:list<string>,
+     *     metadata:array<string,array<string,mixed>>,
      *     trace:list<array<string,mixed>>
      * }
      */
@@ -126,6 +143,7 @@ final class MultiEvaluationResult
             'matched_rules' => $this->ruleNames(),
             'actions' => $this->actions(),
             'reasons' => $this->reasons(),
+            'metadata' => $this->metadata(),
             'trace' => $this->trace->toArray(),
         ];
     }
