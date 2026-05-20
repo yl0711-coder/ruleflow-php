@@ -139,6 +139,105 @@ final class LaravelIntegrationTest extends TestCase
         self::assertSame('cached_rule', $cachedRuleSet->rules()[0]->name());
     }
 
+    public function testItReadsUpdatedConfigWhenRuleCacheIsDisabled(): void
+    {
+        $this->app['config']->set('ruleflow.cache.enabled', false);
+        $this->app['config']->set('ruleflow.rules', [
+            [
+                'name' => 'first_config_rule',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 1000],
+                ],
+                'action' => 'manual_review',
+            ],
+        ]);
+
+        $first = $this->app->make(RuleFlow::class)->evaluate([
+            'order' => [
+                'amount' => 1200,
+            ],
+        ]);
+
+        self::assertTrue($first->matched());
+        self::assertSame('manual_review', $first->action());
+
+        $this->app['config']->set('ruleflow.rules', [
+            [
+                'name' => 'second_config_rule',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 500],
+                ],
+                'action' => 'hold_for_review',
+            ],
+        ]);
+
+        $second = $this->app->make(RuleFlow::class)->evaluate([
+            'order' => [
+                'amount' => 700,
+            ],
+        ]);
+
+        self::assertTrue($second->matched());
+        self::assertSame('hold_for_review', $second->action());
+    }
+
+    public function testItReusesCachedRulesUntilCacheKeyChanges(): void
+    {
+        $this->app['config']->set('cache.default', 'array');
+        $this->app['config']->set('ruleflow.cache.enabled', true);
+        $this->app['config']->set('ruleflow.cache.driver', 'laravel');
+        $this->app['config']->set('ruleflow.cache.store', 'array');
+        $this->app['config']->set('ruleflow.cache.key', 'ruleflow.integration.cache.first');
+        $this->app['config']->set('ruleflow.rules', [
+            [
+                'name' => 'cached_first_rule',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 100],
+                ],
+                'action' => 'first_action',
+            ],
+        ]);
+
+        $first = $this->app->make(RuleFlow::class)->evaluate([
+            'order' => [
+                'amount' => 200,
+            ],
+        ]);
+
+        self::assertTrue($first->matched());
+        self::assertSame('first_action', $first->action());
+
+        $this->app['config']->set('ruleflow.rules', [
+            [
+                'name' => 'cached_second_rule',
+                'conditions' => [
+                    ['field' => 'order.amount', 'operator' => '>', 'value' => 100],
+                ],
+                'action' => 'second_action',
+            ],
+        ]);
+
+        $cached = $this->app->make(RuleFlow::class)->evaluate([
+            'order' => [
+                'amount' => 200,
+            ],
+        ]);
+
+        self::assertTrue($cached->matched());
+        self::assertSame('first_action', $cached->action());
+
+        $this->app['config']->set('ruleflow.cache.key', 'ruleflow.integration.cache.second');
+
+        $second = $this->app->make(RuleFlow::class)->evaluate([
+            'order' => [
+                'amount' => 200,
+            ],
+        ]);
+
+        self::assertTrue($second->matched());
+        self::assertSame('second_action', $second->action());
+    }
+
     public function testItProvidesAnArtisanValidationCommand(): void
     {
         $this->artisan('ruleflow:validate')
