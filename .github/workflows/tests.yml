@@ -41,6 +41,14 @@ jobs:
           coverage: none
           tools: composer:v2
 
+      # Laravel 10/11 are EOL: their advisories will never get patched releases, so
+      # Composer's advisory blocking would make these compatibility legs unresolvable.
+      - name: Allow advisory-affected versions on EOL Laravel legs
+        if: matrix.laravel-version == '10.x' || matrix.laravel-version == '11.x'
+        run: |
+          jq '.config.policy.advisories.block = false' composer.json > composer.tmp.json
+          mv composer.tmp.json composer.json
+
       - name: Install dependencies
         run: |
           composer require --dev orchestra/testbench:${{ matrix.testbench-version }} --no-update
