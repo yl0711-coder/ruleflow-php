@@ -58,3 +58,41 @@ $result = Engine::makeWithOperators(
     'action' => 'allow',
 ]
 ```
+
+## Optional: Validate Definition Values
+
+Operators can also implement `ValidatesValueInterface` so that
+`RuleValidator` (and `php artisan ruleflow:validate`) reports unusable
+`value` shapes at validation time instead of failing silently at evaluation
+time:
+
+```php
+use RuleFlow\Operators\OperatorInterface;
+use RuleFlow\Operators\ValidatesValueInterface;
+
+final class IpRangeOperator implements OperatorInterface, ValidatesValueInterface
+{
+    public function name(): string
+    {
+        return 'ip_in_range';
+    }
+
+    public function evaluate(mixed $actual, mixed $expected): bool
+    {
+        // ...
+    }
+
+    public function validateValue(mixed $value): ?string
+    {
+        if (!is_string($value) || !str_contains($value, '/')) {
+            return 'must be a CIDR string such as 10.0.0.0/8.';
+        }
+
+        return null;
+    }
+}
+```
+
+Returning `null` accepts the value; returning a string reports it as a
+validation error. The built-in `regex`, `between`, `in`, and `not_in`
+operators implement this interface.
