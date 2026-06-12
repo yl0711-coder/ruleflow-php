@@ -100,6 +100,8 @@ final class OperatorTest extends TestCase
         yield 'regex passes' => [RegexOperator::class, 'ORD-1001', '/^ORD-[0-9]+$/', true];
         yield 'regex fails' => [RegexOperator::class, 'PAY-1001', '/^ORD-[0-9]+$/', false];
         yield 'regex rejects non string expected' => [RegexOperator::class, 'ORD-1001', 1001, false];
+        yield 'regex degrades to non match on invalid pattern' =>
+            [RegexOperator::class, 'ORD-1001', '/[unclosed', false];
     }
 
     public function testOperatorRegistryAcceptsCustomOperators(): void

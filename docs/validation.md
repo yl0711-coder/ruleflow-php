@@ -53,3 +53,8 @@ $validation = (new RuleValidator($operators))->validate($rules);
 - required condition keys: `field`, `operator`, `value`
 - non-empty field paths
 - registered operators
+- operator value shapes: `regex` patterns must compile, `between` requires
+  exactly two numeric bounds in order, `in`/`not_in` require a non-empty array
+
+Custom operators can opt into value-shape validation by implementing
+`RuleFlow\Operators\ValidatesValueInterface`.

@@ -7,6 +7,10 @@ All notable changes to RuleFlow PHP will be documented in this file.
 - Added optional rule `metadata` for ownership, version, ticket, and rollout context.
 - Exposed matched rule metadata through `metadata()`, `toArray()`, and `explain()` results.
 - Documented production guidance for rule ownership metadata.
+- Fixed field resolution crashing with an uncaught `Error` when context objects expose non-public properties; they now count as missing.
+- Added context support for `ArrayAccess` offsets and magic `__isset`/`__get` accessors, so Eloquent models work as evaluation context.
+- Added `ValidatesValueInterface` so operators can validate rule `value` shapes; `regex`, `between`, `in`, and `not_in` now report unusable values (invalid patterns, malformed ranges, non-array lists) at validation time.
+- Stopped invalid regex patterns from emitting PHP warnings during evaluation; they degrade to a non-match.
 - Added Laravel 13 support (Testbench 11, PHPUnit 13 allowed) with compatibility docs.
 - Added PHP 8.4 and 8.5 to the CI test matrix; PHP 8.4/8.5 legs run against Laravel 13.
 - Fixed CI for EOL Laravel 10/11 legs by relaxing Composer advisory blocking there only.

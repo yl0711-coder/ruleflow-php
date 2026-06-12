@@ -216,4 +216,138 @@ final class RuleValidatorTest extends TestCase
             $result->errors()
         );
     }
+
+    public function testItReportsInvalidRegexPatterns(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'broken_regex',
+                'conditions' => [
+                    ['field' => 'email', 'operator' => 'regex', 'value' => '/[unclosed'],
+                ],
+                'action' => 'flag',
+            ],
+            [
+                'name' => 'non_string_regex',
+                'conditions' => [
+                    ['field' => 'email', 'operator' => 'regex', 'value' => 123],
+                ],
+                'action' => 'flag',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains(
+            'rules[0].conditions[0].value must be a valid regex pattern.',
+            $result->errors()
+        );
+        self::assertContains(
+            'rules[1].conditions[0].value must be a non-empty string regex pattern.',
+            $result->errors()
+        );
+    }
+
+    public function testItAcceptsValidRegexPatterns(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'valid_regex',
+                'conditions' => [
+                    ['field' => 'email', 'operator' => 'regex', 'value' => '/@example\\.com$/'],
+                ],
+                'action' => 'flag',
+            ],
+        ]);
+
+        self::assertTrue($result->valid());
+    }
+
+    public function testItReportsMalformedBetweenValues(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'single_bound',
+                'conditions' => [
+                    ['field' => 'age', 'operator' => 'between', 'value' => [18]],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'non_numeric_bounds',
+                'conditions' => [
+                    ['field' => 'age', 'operator' => 'between', 'value' => ['low', 'high']],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'inverted_bounds',
+                'conditions' => [
+                    ['field' => 'age', 'operator' => 'between', 'value' => [65, 18]],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains(
+            'rules[0].conditions[0].value must be an array of exactly two numeric values.',
+            $result->errors()
+        );
+        self::assertContains(
+            'rules[1].conditions[0].value must be an array of exactly two numeric values.',
+            $result->errors()
+        );
+        self::assertContains(
+            'rules[2].conditions[0].value minimum must not be greater than maximum.',
+            $result->errors()
+        );
+    }
+
+    public function testItReportsNonArrayInValues(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'in_scalar',
+                'conditions' => [
+                    ['field' => 'status', 'operator' => 'in', 'value' => 'active'],
+                ],
+                'action' => 'allow',
+            ],
+            [
+                'name' => 'not_in_empty',
+                'conditions' => [
+                    ['field' => 'status', 'operator' => 'not_in', 'value' => []],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains('rules[0].conditions[0].value must be a non-empty array.', $result->errors());
+        self::assertContains('rules[1].conditions[0].value must be a non-empty array.', $result->errors());
+    }
+
+    public function testItValidatesOperatorValuesInsideNestedGroups(): void
+    {
+        $result = RuleValidator::defaults()->validate([
+            [
+                'name' => 'nested_value_check',
+                'conditions' => [
+                    [
+                        'match' => 'any',
+                        'conditions' => [
+                            ['field' => 'email', 'operator' => 'regex', 'value' => '/[unclosed'],
+                        ],
+                    ],
+                ],
+                'action' => 'flag',
+            ],
+        ]);
+
+        self::assertFalse($result->valid());
+        self::assertContains(
+            'rules[0].conditions[0].conditions[0].value must be a valid regex pattern.',
+            $result->errors()
+        );
+    }
 }

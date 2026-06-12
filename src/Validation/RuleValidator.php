@@ -8,6 +8,7 @@ use RuleFlow\Exceptions\InvalidRuleException;
 use RuleFlow\Operators\ExistsOperator;
 use RuleFlow\Operators\NotExistsOperator;
 use RuleFlow\Operators\OperatorRegistry;
+use RuleFlow\Operators\ValidatesValueInterface;
 use RuleFlow\Rule;
 
 final class RuleValidator
@@ -258,6 +259,32 @@ final class RuleValidator
 
         if (!in_array($condition['operator'], $this->operators->names(), true)) {
             $errors[] = "{$path}.operator [{$condition['operator']}] is not registered.";
+            return;
+        }
+
+        $this->validateConditionValue($condition, $path, $errors);
+    }
+
+    /**
+     * @param array<string,mixed> $condition
+     * @param list<string> $errors
+     */
+    private function validateConditionValue(array $condition, string $path, array &$errors): void
+    {
+        if (!array_key_exists('value', $condition)) {
+            return;
+        }
+
+        $operator = $this->operators->get($condition['operator']);
+
+        if (!$operator instanceof ValidatesValueInterface) {
+            return;
+        }
+
+        $valueError = $operator->validateValue($condition['value']);
+
+        if ($valueError !== null) {
+            $errors[] = "{$path}.value {$valueError}";
         }
     }
 
