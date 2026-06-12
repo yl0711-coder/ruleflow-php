@@ -23,6 +23,12 @@ jobs:
           - php-version: '8.3'
             testbench-version: '^10.0'
             laravel-version: '12.x'
+          - php-version: '8.4'
+            testbench-version: '^10.0'
+            laravel-version: '12.x'
+          - php-version: '8.5'
+            testbench-version: '^10.0'
+            laravel-version: '12.x'
 
     steps:
       - name: Checkout
