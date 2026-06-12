@@ -27,6 +27,7 @@ RuleFlow is tested with:
 | 10.x | 8.1+ |
 | 11.x | 8.2+ |
 | 12.x | 8.3+ |
+| 13.x | 8.3+ |
 
 The core package only requires PHP 8.1+. Laravel is optional and loaded through
 package auto-discovery when the package is installed in a Laravel application.
@@ -142,7 +143,7 @@ Redis. For local smoke tests, Laravel's default cache store is enough.
 
 Before publishing a RuleFlow release, verify:
 
-- GitHub Actions passes for Laravel 10, 11, and 12.
+- GitHub Actions passes for Laravel 10, 11, 12, and 13.
 - A clean Laravel project can install the package.
 - `vendor:publish --tag=ruleflow-config` works.
 - `php artisan ruleflow:validate` works.
