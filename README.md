@@ -509,6 +509,10 @@ Evaluate rules:
 $result = app(\RuleFlow\RuleFlow::class)->evaluate($context);
 ```
 
+The context accepts nested arrays, public object properties, `ArrayAccess`
+offsets, and magic `__isset`/`__get` accessors — so Eloquent models can be
+passed directly, for example `['order' => $order]`.
+
 Validate configured rules:
 
 ```bash

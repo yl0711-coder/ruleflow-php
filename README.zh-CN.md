@@ -476,6 +476,9 @@ php artisan vendor:publish --tag=ruleflow-config
 $result = app(\RuleFlow\RuleFlow::class)->evaluate($context);
 ```
 
+context 支持嵌套数组、对象公开属性、`ArrayAccess` 以及魔术 `__isset`/`__get`
+访问器——因此可以直接传 Eloquent 模型，例如 `['order' => $order]`。
+
 校验配置中的规则：
 
 ```bash

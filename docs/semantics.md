@@ -113,8 +113,17 @@ Built-in failure reason codes include:
 Fields are resolved from the input context using dot notation, for example
 `user.risk_score`.
 
-The context may be an array or an object. Nested arrays and public object
-properties are supported.
+The context may be an array or an object. Each path segment is resolved in
+this order:
+
+1. array keys
+2. public object properties
+3. `ArrayAccess` offsets (this covers Eloquent models)
+4. magic `__isset`/`__get` accessor pairs
+
+Private and protected properties are treated as missing instead of producing
+an error. For magic accessors, `isset()` semantics apply: an attribute whose
+value is `null` counts as missing.
 
 When a field does not exist:
 

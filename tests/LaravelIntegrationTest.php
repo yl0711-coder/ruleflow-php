@@ -77,6 +77,19 @@ final class LaravelIntegrationTest extends TestCase
         self::assertSame('manual_review', $result->action());
     }
 
+    public function testItEvaluatesEloquentModelAttributesAsContext(): void
+    {
+        $order = new class extends \Illuminate\Database\Eloquent\Model {
+            protected $guarded = [];
+        };
+        $order->forceFill(['amount' => 1299]);
+
+        $result = RuleFlowFacade::evaluate(['order' => $order]);
+
+        self::assertTrue($result->matched());
+        self::assertSame('manual_review', $result->action());
+    }
+
     public function testItCanEvaluateAllRulesThroughLaravelContainer(): void
     {
         $this->app['config']->set('ruleflow.rules', [
