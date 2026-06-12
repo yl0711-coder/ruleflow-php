@@ -2,7 +2,7 @@
 
 All notable changes to RuleFlow PHP will be documented in this file.
 
-## Unreleased
+## v0.3.4 - 2026-06-12
 
 - Added optional rule `metadata` for ownership, version, ticket, and rollout context.
 - Exposed matched rule metadata through `metadata()`, `toArray()`, and `explain()` results.
