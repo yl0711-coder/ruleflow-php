@@ -7,7 +7,8 @@ All notable changes to RuleFlow PHP will be documented in this file.
 - Added optional rule `metadata` for ownership, version, ticket, and rollout context.
 - Exposed matched rule metadata through `metadata()`, `toArray()`, and `explain()` results.
 - Documented production guidance for rule ownership metadata.
-- Added PHP 8.4 and 8.5 (Laravel 12) to the CI test matrix.
+- Added Laravel 13 support (Testbench 11, PHPUnit 13 allowed) with compatibility docs.
+- Added PHP 8.4 and 8.5 to the CI test matrix; PHP 8.4/8.5 legs run against Laravel 13.
 - Fixed CI for EOL Laravel 10/11 legs by relaxing Composer advisory blocking there only.
 - Refreshed dev dependencies (Testbench 10 / Laravel 12 locally, PHPStan 2.2).
 

@@ -14,6 +14,7 @@ The package is tested against:
 | 10.x | 8.x | 8.1 |
 | 11.x | 9.x | 8.2 |
 | 12.x | 10.x | 8.3 |
+| 13.x | 11.x | 8.3+ (tested on 8.4 and 8.5) |
 
 This matrix is reflected in GitHub Actions.
 

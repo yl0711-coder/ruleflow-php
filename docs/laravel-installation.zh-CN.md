@@ -24,6 +24,7 @@ RuleFlow 当前测试：
 | 10.x | 8.1+ |
 | 11.x | 8.2+ |
 | 12.x | 8.3+ |
+| 13.x | 8.3+ |
 
 核心包只要求 PHP 8.1+。Laravel 是可选集成，在 Laravel 项目里通过 package
 auto-discovery 自动加载。
@@ -138,7 +139,7 @@ php artisan tinker
 
 发布 RuleFlow 版本前，确认：
 
-- GitHub Actions 通过 Laravel 10、11、12 测试矩阵。
+- GitHub Actions 通过 Laravel 10、11、12、13 测试矩阵。
 - 干净 Laravel 项目可以安装这个包。
 - `vendor:publish --tag=ruleflow-config` 正常。
 - `php artisan ruleflow:validate` 正常。
