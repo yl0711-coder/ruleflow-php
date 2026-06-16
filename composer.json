@@ -3,12 +3,19 @@
     "description": "A lightweight Decision List rule engine for PHP and Laravel.",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://github.com/yl0711-coder/ruleflow-php",
+    "support": {
+        "issues": "https://github.com/yl0711-coder/ruleflow-php/issues",
+        "source": "https://github.com/yl0711-coder/ruleflow-php"
+    },
     "keywords": [
         "rule-engine",
+        "decision-engine",
         "laravel",
         "risk-control",
         "content-moderation",
-        "business-rules"
+        "business-rules",
+        "feature-flags"
     ],
     "authors": [
         {
