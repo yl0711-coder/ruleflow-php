@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RuleFlow\Operators;
 
-final class ExistsOperator implements OperatorInterface
+final class ExistsOperator implements OperatorInterface, UsesExistenceInput
 {
     public function name(): string
     {

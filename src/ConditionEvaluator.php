@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace RuleFlow;
 
-use RuleFlow\Operators\ExistsOperator;
-use RuleFlow\Operators\NotExistsOperator;
 use RuleFlow\Operators\OperatorRegistry;
+use RuleFlow\Operators\UsesExistenceInput;
 
 /**
  * @internal
@@ -35,6 +34,9 @@ final class ConditionEvaluator
         $checks = [];
         $matched = $match === Rule::MATCH_ALL;
 
+        // Every node is evaluated even once the outcome is decided: short-
+        // circuiting would skip building the per-condition trace, which is
+        // the explainability the engine is built to expose.
         foreach ($nodes as $node) {
             $checkStartedAt = hrtime(true);
 
@@ -77,7 +79,7 @@ final class ConditionEvaluator
         $exists = $this->fields->exists($context, $node->field());
         $actual = $this->fields->get($context, $node->field());
         $operator = $this->operators->get($node->operator());
-        $operatorInput = $this->usesExistenceInput($node->operator()) ? $exists : $actual;
+        $operatorInput = $operator instanceof UsesExistenceInput ? $exists : $actual;
         $passed = $operator->evaluate($operatorInput, $node->value());
 
         $check = [
@@ -126,18 +128,6 @@ final class ConditionEvaluator
         }
 
         return $check;
-    }
-
-    private function usesExistenceInput(string $operator): bool
-    {
-        return in_array(
-            $operator,
-            [
-                (new ExistsOperator())->name(),
-                (new NotExistsOperator())->name(),
-            ],
-            true
-        );
     }
 
     private function traceValue(bool $sensitive, mixed $value): mixed

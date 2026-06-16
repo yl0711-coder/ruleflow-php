@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use RuleFlow\Engine;
 use RuleFlow\Operators\OperatorRegistry;
 use RuleFlow\RuleSet;
+use RuleFlow\Tests\Fixtures\IsMissingOperator;
 use RuleFlow\Tests\Fixtures\RegexOperator;
 
 final class EngineTest extends TestCase
@@ -145,6 +146,36 @@ final class EngineTest extends TestCase
 
         self::assertTrue($result->matched());
         self::assertSame('allow', $result->action());
+    }
+
+    public function testCustomOperatorsCanOptIntoExistenceInput(): void
+    {
+        $operators = OperatorRegistry::defaults();
+        $operators->register(new IsMissingOperator());
+
+        $rules = [
+            [
+                'name' => 'missing_coupon',
+                'conditions' => [
+                    // No 'value' key: existence operators take existence input.
+                    ['field' => 'order.coupon', 'operator' => 'is_missing'],
+                ],
+                'action' => 'allow',
+            ],
+        ];
+
+        $ruleSet = RuleSet::fromArray($rules);
+
+        $missing = Engine::makeWithOperators($ruleSet, $operators)->evaluate([
+            'order' => ['id' => 'ORD-1001'],
+        ]);
+        self::assertTrue($missing->matched());
+        self::assertSame('allow', $missing->action());
+
+        $present = Engine::makeWithOperators($ruleSet, $operators)->evaluate([
+            'order' => ['coupon' => 'SAVE10'],
+        ]);
+        self::assertFalse($present->matched());
     }
 
     public function testItSupportsNestedConditionGroups(): void

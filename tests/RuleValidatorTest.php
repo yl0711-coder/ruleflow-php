@@ -6,6 +6,7 @@ namespace RuleFlow\Tests;
 
 use PHPUnit\Framework\TestCase;
 use RuleFlow\Operators\OperatorRegistry;
+use RuleFlow\Tests\Fixtures\IsMissingOperator;
 use RuleFlow\Tests\Fixtures\RegexOperator;
 use RuleFlow\Validation\RuleValidator;
 
@@ -82,6 +83,24 @@ final class RuleValidatorTest extends TestCase
                 'name' => 'order_id_pattern',
                 'conditions' => [
                     ['field' => 'order.id', 'operator' => 'regex', 'value' => '/^ORD-[0-9]+$/'],
+                ],
+                'action' => 'allow',
+            ],
+        ]);
+
+        self::assertTrue($result->valid());
+    }
+
+    public function testCustomExistenceOperatorsAreAllowedWithoutValue(): void
+    {
+        $operators = OperatorRegistry::defaults();
+        $operators->register(new IsMissingOperator());
+
+        $result = (new RuleValidator($operators))->validate([
+            [
+                'name' => 'missing_coupon',
+                'conditions' => [
+                    ['field' => 'order.coupon', 'operator' => 'is_missing'],
                 ],
                 'action' => 'allow',
             ],

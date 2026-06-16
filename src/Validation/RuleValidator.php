@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace RuleFlow\Validation;
 
 use RuleFlow\Exceptions\InvalidRuleException;
-use RuleFlow\Operators\ExistsOperator;
-use RuleFlow\Operators\NotExistsOperator;
 use RuleFlow\Operators\OperatorRegistry;
+use RuleFlow\Operators\UsesExistenceInput;
 use RuleFlow\Operators\ValidatesValueInterface;
 use RuleFlow\Rule;
 
@@ -297,13 +296,10 @@ final class RuleValidator
             return false;
         }
 
-        return in_array(
-            $condition['operator'],
-            [
-                (new ExistsOperator())->name(),
-                (new NotExistsOperator())->name(),
-            ],
-            true
-        );
+        if (!in_array($condition['operator'], $this->operators->names(), true)) {
+            return false;
+        }
+
+        return $this->operators->get($condition['operator']) instanceof UsesExistenceInput;
     }
 }
