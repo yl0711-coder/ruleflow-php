@@ -2,6 +2,12 @@
 
 All notable changes to RuleFlow PHP will be documented in this file.
 
+## v0.3.5 - 2026-06-23
+
+- Resolved existence operators through a `UsesExistenceInput` marker interface instead of instantiating `ExistsOperator`/`NotExistsOperator` to read their names, removing two object allocations and a string scan from the evaluation hot path (and the same duplication in rule validation).
+- Made existence-style operators extensible: third-party operators can now opt into existence input and value-optional validation by implementing `UsesExistenceInput`, instead of the engine special-casing two hardcoded operator names.
+- Added homepage and support links (issues/source) so Packagist renders repository links, plus `decision-engine` and `feature-flags` keywords for discoverability.
+
 ## v0.3.4 - 2026-06-12
 
 - Added optional rule `metadata` for ownership, version, ticket, and rollout context.
